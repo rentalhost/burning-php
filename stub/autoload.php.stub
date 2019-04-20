@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types = 1);
+
+use Rentalhost\BurningPHP\BurningAutoloader;
+
+if (!class_exists(BurningAutoloader::class, false)) {
+    require '$composerAutoloadReal';
+
+    $instanceBurningAutoloader = BurningAutoloader::getInstance();
+
+    /** @noinspection PhpUndefinedVariableInspection */
+    $instanceBurningAutoloader->composerClassLoader = $composerAutoloadClassname::getLoader();
+    $instanceBurningAutoloader->register();
+}

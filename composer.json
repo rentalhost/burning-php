@@ -1,0 +1,35 @@
+{
+    "type": "composer-plugin",
+    "name": "rentalhost-team/burning-php",
+    "description": "A new way of profiling codes in PHP.",
+    "version": "0.1.0",
+    "license": "MIT",
+
+    "keywords": [ "profiling", "performance", "dead-code", "analysis", "code-coverage", "coverage", "debug", "debugger", "burning" ],
+
+    "authors": [
+        {
+            "name": "David Rodrigues",
+            "email": "david.rodrigues@rentalhost.net",
+            "homepage": "https://rentalhost.net",
+            "role": "Developer"
+        }
+    ],
+
+    "require": {
+        "php": ">=7.1",
+        "ext-json": "*",
+        "composer-plugin-api": "^1.1",
+        "composer/composer": "^1.8"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "Rentalhost\\BurningPHP\\": "src/"
+        }
+    },
+
+    "extra": {
+        "class": "Rentalhost\\BurningPHP\\Composer\\ComposerPlugin"
+    }
+}
