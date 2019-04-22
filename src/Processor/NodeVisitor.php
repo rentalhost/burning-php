@@ -24,6 +24,10 @@ class NodeVisitor
             return new Node\Scalar\String_(dirname($this->file));
         }
 
+        if ($node instanceof Node\Scalar\MagicConst\File) {
+            return new Node\Scalar\String_($this->file);
+        }
+
         return parent::leaveNode($node);
     }
 }
