@@ -12,7 +12,7 @@ use Rentalhost\BurningPHP\BurningConfiguration;
  * @property string $workingDirectory
  */
 class InitializeType
-    extends Type
+    extends AbstractType
 {
     public function __construct()
     {

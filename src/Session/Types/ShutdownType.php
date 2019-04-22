@@ -8,6 +8,6 @@ namespace Rentalhost\BurningPHP\Session\Types;
  * @property boolean $clean
  */
 class ShutdownType
-    extends Type
+    extends AbstractType
 {
 }

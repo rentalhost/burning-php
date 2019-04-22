@@ -11,7 +11,7 @@ use Rentalhost\BurningPHP\Support\HasAttributes;
  * @property string $type
  * @property float  $timestamp
  */
-abstract class Type
+abstract class AbstractType
     implements \JsonSerializable
 {
     use HasAttributes;

@@ -9,6 +9,6 @@ namespace Rentalhost\BurningPHP\Session\Types;
  * @property string $file
  */
 class AutoloadType
-    extends Type
+    extends AbstractType
 {
 }

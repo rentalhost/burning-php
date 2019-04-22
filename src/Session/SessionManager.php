@@ -7,7 +7,7 @@ namespace Rentalhost\BurningPHP\Session;
 use Rentalhost\BurningPHP\BurningConfiguration;
 use Rentalhost\BurningPHP\Session\Types\InitializeType;
 use Rentalhost\BurningPHP\Session\Types\ShutdownType;
-use Rentalhost\BurningPHP\Session\Types\Type;
+use Rentalhost\BurningPHP\Session\Types\AbstractType;
 
 class SessionManager
 {
@@ -80,7 +80,7 @@ class SessionManager
         fclose($this->sessionFileHandler);
     }
 
-    public function write(Type $type): void
+    public function write(AbstractType $type): void
     {
         $prefix = ftell($this->sessionFileHandler) === 2 ? "\t" : ",\n\t";
 
