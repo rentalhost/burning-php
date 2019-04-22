@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Rentalhost\BurningPHP\Processor;
 
+use PhpParser\NodeTraverser;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard as PrettyPrinter;
@@ -37,7 +38,12 @@ class Processor
 
         $fileStatements = $this->parser->parse(file_get_contents($file));
 
-        file_put_contents($fileCached, (new PrettyPrinter)->prettyPrintFile($fileStatements), LOCK_EX);
+        $traverser = new NodeTraverser;
+        $traverser->addVisitor(new NodeVisitor($file));
+
+        $modifiedFileStatements = $traverser->traverse($fileStatements);
+
+        file_put_contents($fileCached, (new PrettyPrinter)->prettyPrintFile($modifiedFileStatements), LOCK_EX);
 
         return $fileCached;
     }
