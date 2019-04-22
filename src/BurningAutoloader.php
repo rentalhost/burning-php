@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Rentalhost\BurningPHP;
 
 use Composer\Autoload\ClassLoader;
+use Rentalhost\BurningPHP\Session\SessionManager;
 
 class BurningAutoloader
 {
@@ -19,6 +20,8 @@ class BurningAutoloader
         if (self::$instance) {
             return self::$instance;
         }
+
+        SessionManager::getInstance();
 
         return self::$instance = new self;
     }

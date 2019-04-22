@@ -1,5 +1,18 @@
 {
     /**
+     * Burning output directory, based on the current working dir.
+     * @type string
+     */
+    "burningDirectory": ".burning",
+
+    /**
+     * Burning output session format, that will be stored at the $['burningDirectory'].
+     * - {%requestMs} will be replaced by the request time milliseconds.
+     * @type string
+     */
+    "burningSessionFormat": ".sess{%requestMs}.burning-session",
+
+    /**
      * Burning version. If null it will be identified automatically based on package version.
      * @type int|null
      */

@@ -8,6 +8,8 @@ use ColinODell\Json5\Json5Decoder;
 use Rentalhost\BurningPHP\Support\HasAttributes;
 
 /**
+ * @property string      $burningDirectory
+ * @property string      $burningSessionFormat
  * @property string|null $burningVersion
  * @property bool        $devOnly
  * @property bool        $disableXdebug
