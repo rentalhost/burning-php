@@ -1,3 +1,4 @@
 {
-    "devOnly": true
+    "devOnly": true,
+    "disableXdebug": true
 }
