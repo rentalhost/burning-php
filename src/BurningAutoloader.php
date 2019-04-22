@@ -8,6 +8,7 @@ use Composer\Autoload\ClassLoader;
 use Rentalhost\BurningPHP\Session\Types\AutoloadType;
 use Rentalhost\BurningPHP\Support\Deterministic;
 use Rentalhost\BurningPHP\Support\SingletonPattern;
+use Symfony\Component\Filesystem\Filesystem;
 
 class BurningAutoloader
 {
@@ -31,11 +32,12 @@ class BurningAutoloader
     {
         $burningConfiguration    = BurningConfiguration::getInstance();
         $burningControlDirectory = $burningConfiguration->getBurningDirectory();
+        $burningCacheDirectory   = $burningControlDirectory . '/caches';
 
         $burningDirectories = [
             $burningControlDirectory,
             $burningControlDirectory . '/sessions',
-            $burningControlDirectory . '/caches'
+            $burningCacheDirectory
         ];
 
         $workingDirPerms = fileperms($burningConfiguration->currentWorkingDir);
@@ -45,6 +47,21 @@ class BurningAutoloader
                 mkdir($burningDirectory, $workingDirPerms);
             }
         }
+
+        $versionFile = $burningControlDirectory . '/version';
+
+        if (is_file($versionFile)) {
+            $versionValue = file_get_contents($versionFile);
+
+            if ($versionValue !== (string) $burningConfiguration->getBurningVersionInt()) {
+                $filesystem = new Filesystem;
+                $filesystem->remove($burningCacheDirectory);
+
+                mkdir($burningCacheDirectory, $workingDirPerms);
+            }
+        }
+
+        file_put_contents($versionFile, $burningConfiguration->getBurningVersionInt());
     }
 
     public function register(): void
