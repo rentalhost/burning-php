@@ -14,6 +14,7 @@ use Rentalhost\BurningPHP\Support\SingletonPattern;
  * @property string|null $burningVersion
  * @property bool        $devOnly
  * @property bool        $disableXdebug
+ * @property bool        $ignoreDevelopmentPaths
  * @property bool        $forceWriteShutdownObject
  */
 class BurningConfiguration
@@ -27,6 +28,9 @@ class BurningConfiguration
     /** @var string */
     public $currentWorkingDir;
 
+    /** @var array */
+    private $targetComposer = [];
+
     public function __construct()
     {
         $defaultConfigurationFile = realpath(self::DEFAULT_CONFIGURATION_FILE);
@@ -38,6 +42,12 @@ class BurningConfiguration
 
         if ($userConfigurationFile !== null && $defaultConfigurationFile !== $userConfigurationFile) {
             $this->mergeWith($userConfigurationFile);
+        }
+
+        $targetComposerFile = $this->currentWorkingDir . '/composer.json';
+
+        if (is_readable($targetComposerFile)) {
+            $this->targetComposer = json_decode(file_get_contents($targetComposerFile), true) ?: [];
         }
 
         if ($this->burningVersion === null) {
@@ -56,6 +66,33 @@ class BurningConfiguration
         [ $majorVersion, $minorVersion, $patchVersion ] = explode('.', $this->burningVersion);
 
         return $majorVersion * 10000 + $minorVersion * 100 + $patchVersion;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTargetDevelopmentPaths(): array
+    {
+        if (!$this->ignoreDevelopmentPaths) {
+            return [];
+        }
+
+        $files       = $this->targetComposer['autoload-dev']['files'] ?? [];
+        $directories = $this->targetComposer['autoload-dev']['psr-4'] ?? [];
+
+        $files = array_map(function (string $path) {
+            return realpath($this->currentWorkingDir . DIRECTORY_SEPARATOR . $path);
+        }, array_filter($files, static function (string $path) {
+            return is_file($path);
+        }));
+
+        $directories = array_map(function (string $path) {
+            return realpath($this->currentWorkingDir . DIRECTORY_SEPARATOR . $path) . DIRECTORY_SEPARATOR;
+        }, array_filter($directories, static function (string $path) {
+            return is_dir($path);
+        }));
+
+        return array_merge($files, $directories);
     }
 
     private function mergeWith(?string $configurationFile): void

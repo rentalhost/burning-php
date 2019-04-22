@@ -39,6 +39,14 @@
     "disableXdebug": true,
 
     /**
+     * Enabling this option will ignore all development paths declared in composer.json[autoload-dev].
+     * It is useful to ignore testing files that will not be so useful on analysis process.
+     *
+     * @type boolean
+     */
+    "ignoreDevelopmentPaths": true,
+
+    /**
      * Enabling it will force write shutdown object even if process is killed before it be available.
      * By otherside, it will reduce the Burning performance a little bit.
      *

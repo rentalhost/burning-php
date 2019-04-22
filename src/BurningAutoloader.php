@@ -6,6 +6,7 @@ namespace Rentalhost\BurningPHP;
 
 use Composer\Autoload\ClassLoader;
 use Rentalhost\BurningPHP\Session\Types\AutoloadType;
+use Rentalhost\BurningPHP\Support\Deterministic;
 use Rentalhost\BurningPHP\Support\SingletonPattern;
 
 class BurningAutoloader
@@ -15,12 +16,15 @@ class BurningAutoloader
     /** @var ClassLoader */
     public $composerClassLoader;
 
-    /** @var string */
-    private $vendorDirectory;
+    /** @var string[] */
+    private $ignorablePrefixes;
 
     public function __construct()
     {
-        $this->vendorDirectory = realpath(getcwd() . '/vendor') . DIRECTORY_SEPARATOR;
+        $this->ignorablePrefixes = array_merge(
+            [ realpath(getcwd() . '/vendor') . DIRECTORY_SEPARATOR ],
+            Deterministic::withClosure(\Closure::fromCallable([ BurningConfiguration::getInstance(), 'getTargetDevelopmentPaths' ]))
+        );
     }
 
     public function register(): void
@@ -34,18 +38,24 @@ class BurningAutoloader
             return false;
         }
 
-        $file = realpath($this->composerClassLoader->findFile($classname));
+        $file = $this->composerClassLoader->findFile($classname);
 
-        if (strpos($file, $this->vendorDirectory) === 0) {
+        if (!$file || !is_readable($file)) {
             return false;
         }
 
-        if (is_readable($file)) {
-            $autoloadObjectInstance            = new AutoloadType;
-            $autoloadObjectInstance->classname = $classname;
-            $autoloadObjectInstance->file      = $file;
-            $autoloadObjectInstance->write();
+        $file = realpath($file);
+
+        foreach ($this->ignorablePrefixes as $ignorablePrefix) {
+            if (strpos($file, $ignorablePrefix) === 0) {
+                return false;
+            }
         }
+
+        $autoloadObjectInstance            = new AutoloadType;
+        $autoloadObjectInstance->classname = $classname;
+        $autoloadObjectInstance->file      = $file;
+        $autoloadObjectInstance->write();
 
         return false;
     }
