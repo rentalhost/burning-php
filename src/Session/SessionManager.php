@@ -47,30 +47,6 @@ class SessionManager
         register_shutdown_function([ $this, 'shutdown' ]);
     }
 
-    public static function initialize(): void
-    {
-        self::generateControlDirectory();
-    }
-
-    private static function generateControlDirectory(): void
-    {
-        $burningConfiguration    = BurningConfiguration::getInstance();
-        $burningControlDirectory = $burningConfiguration->getBurningDirectory();
-
-        $burningDirectories = [
-            $burningControlDirectory,
-            $burningControlDirectory . '/sessions'
-        ];
-
-        $workingDirPerms = fileperms($burningConfiguration->currentWorkingDir);
-
-        foreach ($burningDirectories as $burningDirectory) {
-            if (!is_dir($burningDirectory)) {
-                mkdir($burningDirectory, $workingDirPerms);
-            }
-        }
-    }
-
     public function shutdown(): void
     {
         $shutdownObjectInstance        = $this->shutdownObjectInstance;

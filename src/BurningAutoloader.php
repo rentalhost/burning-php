@@ -27,8 +27,30 @@ class BurningAutoloader
         );
     }
 
+    private static function generateControlDirectory(): void
+    {
+        $burningConfiguration    = BurningConfiguration::getInstance();
+        $burningControlDirectory = $burningConfiguration->getBurningDirectory();
+
+        $burningDirectories = [
+            $burningControlDirectory,
+            $burningControlDirectory . '/sessions',
+            $burningControlDirectory . '/caches'
+        ];
+
+        $workingDirPerms = fileperms($burningConfiguration->currentWorkingDir);
+
+        foreach ($burningDirectories as $burningDirectory) {
+            if (!is_dir($burningDirectory)) {
+                mkdir($burningDirectory, $workingDirPerms);
+            }
+        }
+    }
+
     public function register(): void
     {
+        self::generateControlDirectory();
+
         spl_autoload_register([ $this, 'autoload' ], true, true);
     }
 
