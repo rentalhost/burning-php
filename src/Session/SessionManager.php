@@ -8,11 +8,11 @@ use Rentalhost\BurningPHP\BurningConfiguration;
 use Rentalhost\BurningPHP\Session\Types\AbstractType;
 use Rentalhost\BurningPHP\Session\Types\InitializeType;
 use Rentalhost\BurningPHP\Session\Types\ShutdownType;
-use Rentalhost\BurningPHP\Support\SingletonPattern;
+use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 class SessionManager
 {
-    use SingletonPattern;
+    use SingletonPatternTrait;
 
     /** @var BurningConfiguration */
     private $burningConfiguration;

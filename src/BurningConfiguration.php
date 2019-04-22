@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace Rentalhost\BurningPHP;
 
 use ColinODell\Json5\Json5Decoder;
-use Rentalhost\BurningPHP\Support\HasAttributes;
-use Rentalhost\BurningPHP\Support\SingletonPattern;
+use Rentalhost\BurningPHP\Support\Traits\HasAttributesTrait;
+use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 /**
  * @property string      $burningDirectory
@@ -20,8 +20,8 @@ use Rentalhost\BurningPHP\Support\SingletonPattern;
  */
 class BurningConfiguration
 {
-    use HasAttributes,
-        SingletonPattern;
+    use HasAttributesTrait,
+        SingletonPatternTrait;
 
     private const
         DEFAULT_CONFIGURATION_FILE = __DIR__ . '/../.burning.json';

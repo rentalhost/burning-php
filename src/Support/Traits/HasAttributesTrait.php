@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Rentalhost\BurningPHP\Support;
+namespace Rentalhost\BurningPHP\Support\Traits;
 
-trait HasAttributes
+trait HasAttributesTrait
 {
     /** @var mixed[] */
     private $attributes = [];

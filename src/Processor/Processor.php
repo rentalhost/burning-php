@@ -9,11 +9,11 @@ use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard as PrettyPrinter;
 use Rentalhost\BurningPHP\BurningConfiguration;
-use Rentalhost\BurningPHP\Support\SingletonPattern;
+use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 class Processor
 {
-    use SingletonPattern;
+    use SingletonPatternTrait;
 
     /** @var Parser */
     private $parser;

@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Rentalhost\BurningPHP\Session\Types;
 
 use Rentalhost\BurningPHP\Session\SessionManager;
-use Rentalhost\BurningPHP\Support\HasAttributes;
+use Rentalhost\BurningPHP\Support\Traits\HasAttributesTrait;
 
 /**
  * @property string $type
@@ -14,7 +14,7 @@ use Rentalhost\BurningPHP\Support\HasAttributes;
 abstract class AbstractType
     implements \JsonSerializable
 {
-    use HasAttributes;
+    use HasAttributesTrait;
 
     private const
         REGEXP_BASE_IDENTIFIER = '<\\\\(?<base>[^\\\\]+)Type$>';

@@ -8,13 +8,13 @@ use Composer\Autoload\ClassLoader;
 use Rentalhost\BurningPHP\Processor\Processor;
 use Rentalhost\BurningPHP\Session\Types\AutoloadType;
 use Rentalhost\BurningPHP\Support\Deterministic;
-use Rentalhost\BurningPHP\Support\SingletonPattern;
+use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 use Symfony\Component\Filesystem\Filesystem;
 use function Composer\Autoload\includeFile;
 
 class BurningAutoloader
 {
-    use SingletonPattern;
+    use SingletonPatternTrait;
 
     /** @var ClassLoader */
     public $composerClassLoader;
