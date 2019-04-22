@@ -6,11 +6,11 @@ namespace Rentalhost\BurningPHP;
 
 use Composer\Autoload\ClassLoader;
 use Rentalhost\BurningPHP\Session\Types\AutoloadType;
+use Rentalhost\BurningPHP\Support\SingletonPattern;
 
 class BurningAutoloader
 {
-    /** @var self */
-    private static $instance;
+    use SingletonPattern;
 
     /** @var ClassLoader */
     public $composerClassLoader;
@@ -21,15 +21,6 @@ class BurningAutoloader
     public function __construct()
     {
         $this->vendorDirectory = realpath(getcwd() . '/vendor') . DIRECTORY_SEPARATOR;
-    }
-
-    public static function getInstance(): self
-    {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
     }
 
     public function register(): void

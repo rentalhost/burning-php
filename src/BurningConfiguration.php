@@ -6,6 +6,7 @@ namespace Rentalhost\BurningPHP;
 
 use ColinODell\Json5\Json5Decoder;
 use Rentalhost\BurningPHP\Support\HasAttributes;
+use Rentalhost\BurningPHP\Support\SingletonPattern;
 
 /**
  * @property string      $burningDirectory
@@ -17,41 +18,32 @@ use Rentalhost\BurningPHP\Support\HasAttributes;
  */
 class BurningConfiguration
 {
-    use HasAttributes;
+    use HasAttributes,
+        SingletonPattern;
 
     private const
         DEFAULT_CONFIGURATION_FILE = __DIR__ . '/../.burning.json';
 
-    /** @var self */
-    private static $instance;
-
     /** @var string */
     public $currentWorkingDir;
 
-    public static function getInstance(): self
+    public function __construct()
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
         $defaultConfigurationFile = realpath(self::DEFAULT_CONFIGURATION_FILE);
         $userConfigurationFile    = realpath(getcwd() . '/.burning.json') ?: null;
 
-        $self = new static;
-        $self->mergeWith($defaultConfigurationFile);
+        $this->mergeWith($defaultConfigurationFile);
 
-        $self->currentWorkingDir = getcwd();
+        $this->currentWorkingDir = getcwd();
 
         if ($userConfigurationFile !== null && $defaultConfigurationFile !== $userConfigurationFile) {
-            $self->mergeWith($userConfigurationFile);
+            $this->mergeWith($userConfigurationFile);
         }
 
-        if ($self->burningVersion === null) {
-            $composerJson         = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true);
-            $self->burningVersion = $composerJson['version'];
+        if ($this->burningVersion === null) {
+            $selfComposer         = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true);
+            $this->burningVersion = $selfComposer['version'];
         }
-
-        return self::$instance = $self;
     }
 
     public function getBurningDirectory(): string

@@ -8,14 +8,14 @@ use Rentalhost\BurningPHP\BurningConfiguration;
 use Rentalhost\BurningPHP\Session\Types\AbstractType;
 use Rentalhost\BurningPHP\Session\Types\InitializeType;
 use Rentalhost\BurningPHP\Session\Types\ShutdownType;
+use Rentalhost\BurningPHP\Support\SingletonPattern;
 
 class SessionManager
 {
-    /** @var self */
-    private static $instance;
+    use SingletonPattern;
 
     /** @var BurningConfiguration */
-    private $burningConfigurationInstance;
+    private $burningConfiguration;
 
     /** @var bool|resource */
     private $sessionFileHandler;
@@ -47,17 +47,9 @@ class SessionManager
         register_shutdown_function([ $this, 'shutdown' ]);
     }
 
-    public static function getInstance(): self
+    public static function initialize(): void
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
         self::generateControlDirectory();
-
-        $instance = new self;
-
-        return self::$instance = $instance;
     }
 
     private static function generateControlDirectory(): void
