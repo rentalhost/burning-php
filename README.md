@@ -28,8 +28,9 @@ The `initialize` type is generated when a new session is started by the **Burnin
 
 The `shutdown` type is generated when the script shutdowns. It counterpart is the `initialize` type.
 
-If the process is killed before terminating properly (eg. via `SIGKILL`), this type will not be written.
+If the process is killed before terminating properly (eg. via `SIGKILL`), this type will not be written by default. If you really need of this object, so you need enable the `forceWriteShutdownObject` option. The `clean` property will give you a clue if the process was finished without be killed when it is `true`.
 
 ##### Properties
 
 * **timestamp** (*float*): the timestamp at the shutdown moment, with milliseconds precision;
+* **clean** (*boolean*): will be `true` if it is a clean shutdown (*eg. the process was not killed*);

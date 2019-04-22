@@ -13,6 +13,7 @@ use Rentalhost\BurningPHP\Support\HasAttributes;
  * @property string|null $burningVersion
  * @property bool        $devOnly
  * @property bool        $disableXdebug
+ * @property bool        $forceWriteShutdownObject
  */
 class BurningConfiguration
 {

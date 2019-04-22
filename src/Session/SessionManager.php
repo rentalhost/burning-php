@@ -14,28 +14,40 @@ class SessionManager
     /** @var self */
     private static $instance;
 
+    /** @var BurningConfiguration */
+    private $burningConfigurationInstance;
+
     /** @var bool|resource */
     private $sessionFileHandler;
 
+    /** @var ShutdownType */
+    private $shutdownObjectInstance;
+
     public function __construct()
     {
-        $burningConfiguration = BurningConfiguration::getInstance();
-        $requestTimeFloat     = $_SERVER['REQUEST_TIME_FLOAT'];
-        $requestMs            = (int) ($requestTimeFloat * 1000.0);
-        $sessionFile          = strtr($burningConfiguration->burningSessionFormat, [ '{%requestMs}' => $requestMs ]);
+        $this->burningConfiguration = BurningConfiguration::getInstance();
 
-        $this->sessionFileHandler = fopen(getcwd() . '/' . $burningConfiguration->burningDirectory . '/' . $sessionFile, 'cb');
+        $requestTimeFloat = $_SERVER['REQUEST_TIME_FLOAT'];
+        $requestMs        = (int) ($requestTimeFloat * 1000.0);
+        $sessionFile      = strtr($this->burningConfiguration->burningSessionFormat, [ '{%requestMs}' => $requestMs ]);
+
+        $this->sessionFileHandler = fopen(getcwd() . '/' . $this->burningConfiguration->burningDirectory . '/' . $sessionFile, 'cb');
 
         ftruncate($this->sessionFileHandler, 0);
         fwrite($this->sessionFileHandler, "[\n]\n");
         fseek($this->sessionFileHandler, 2);
 
-        $initializeType                   = new InitializeType;
-        $initializeType->version          = BurningConfiguration::getInstance()->getBurningVersionInt();
-        $initializeType->timestamp        = round(microtime(true), 3);
-        $initializeType->requestTimestamp = round($requestTimeFloat, 3);
+        $shutdownObjectInstance        = new ShutdownType;
+        $shutdownObjectInstance->clean = false;
 
-        $this->write($initializeType);
+        $this->shutdownObjectInstance = $shutdownObjectInstance;
+
+        $initializeObjectInstance                   = new InitializeType;
+        $initializeObjectInstance->version          = BurningConfiguration::getInstance()->getBurningVersionInt();
+        $initializeObjectInstance->timestamp        = round(microtime(true), 3);
+        $initializeObjectInstance->requestTimestamp = round($requestTimeFloat, 3);
+
+        $this->write($initializeObjectInstance);
 
         register_shutdown_function([ $this, 'shutdown' ]);
     }
@@ -66,10 +78,11 @@ class SessionManager
 
     public function shutdown(): void
     {
-        $shutdownType            = new ShutdownType;
-        $shutdownType->timestamp = round(microtime(true), 3);
+        $shutdownObjectInstance            = $this->shutdownObjectInstance;
+        $shutdownObjectInstance->timestamp = round(microtime(true), 3);
+        $shutdownObjectInstance->clean     = true;
 
-        $this->write($shutdownType);
+        $this->write($shutdownObjectInstance);
 
         fclose($this->sessionFileHandler);
     }
@@ -80,5 +93,15 @@ class SessionManager
 
         fwrite($this->sessionFileHandler, $prefix . json_encode($type) . "\n]\n");
         fseek($this->sessionFileHandler, -3, SEEK_END);
+
+        if ($this->burningConfiguration->forceWriteShutdownObject) {
+            $shutdownObjectInstance            = $this->shutdownObjectInstance;
+            $shutdownObjectInstance->timestamp = round(microtime(true), 3);
+
+            $shutdownObjectContent = ",\n\t" . json_encode($shutdownObjectInstance) . "\n]\n";
+
+            fwrite($this->sessionFileHandler, $shutdownObjectContent);
+            fseek($this->sessionFileHandler, -strlen($shutdownObjectContent), SEEK_END);
+        }
     }
 }
