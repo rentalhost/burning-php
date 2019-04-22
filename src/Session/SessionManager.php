@@ -27,9 +27,8 @@ class SessionManager
     {
         $this->burningConfiguration = BurningConfiguration::getInstance();
 
-        $requestTimeFloat = $_SERVER['REQUEST_TIME_FLOAT'];
-        $sessionFile      = strtr($this->burningConfiguration->burningSessionFormat, [
-            '{%requestMs}' => str_pad(var_export($requestTimeFloat, true), 17, '0')
+        $sessionFile = strtr($this->burningConfiguration->burningSessionFormat, [
+            '{%requestMs}' => str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0')
         ]);
 
         $this->sessionFileHandler = fopen(getcwd() . '/' . $this->burningConfiguration->burningDirectory . '/' . $sessionFile, 'cb');
@@ -43,11 +42,7 @@ class SessionManager
 
         $this->shutdownObjectInstance = $shutdownObjectInstance;
 
-        $initializeObjectInstance                   = new InitializeType;
-        $initializeObjectInstance->version          = BurningConfiguration::getInstance()->getBurningVersionInt();
-        $initializeObjectInstance->requestTimestamp = $requestTimeFloat;
-
-        $this->write($initializeObjectInstance);
+        $this->write(new InitializeType);
 
         register_shutdown_function([ $this, 'shutdown' ]);
     }
