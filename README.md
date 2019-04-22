@@ -6,7 +6,7 @@
 
 You could customize how *Burning PHP* will run by creating a file called `.burning.json`. It is a JSON5 compatible file that contains all available configurations of this package.
 
-See the file [.burning.json] comments to understand how each properties works.
+See the file [.burning.json](.burning.json) comments to understand how each properties works.
 
 ## Output Structure  
 

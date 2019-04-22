@@ -1,7 +1,7 @@
 {
     "type": "composer-plugin",
-    "name": "rentalhost-team/burning-php",
-    "description": "A new way of profiling codes in PHP.",
+    "name": "rentalhost/burning-php",
+    "description": "A very complete PHP code analysis.",
     "version": "0.1.0",
     "license": "MIT",
 
