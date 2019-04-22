@@ -10,9 +10,15 @@ See the file [.burning.json] comments to understand how each properties works.
 
 ## Output Structure  
 
-The output file is named by default `.sess{%requestMs}.burning-session` and stored at `.burning` folder relative to the current working dir. It is a JSON file with a bunch of objects. Each object will have an `type` key that identifies what it is and will help to know what is the anothers properties of this object.  
+The output file is named by default `.sess{%requestMs}.burning-session` and stored at `.burning` folder relative to the current working dir. It is a JSON file with a bunch of objects. Each object will have an `type` key that identifies what it is and will help to know what is the anothers properties of this object.
 
-### Types  
+### Common Properties
+
+All types are fulfilled with some default properties:
+
+* **type** (*string*): the type name;
+
+### Types
 
 #### initialize
 
@@ -21,8 +27,8 @@ The `initialize` type is generated when a new session is started by the **Burnin
 ##### Properties
 
 * **version** (*int*): the version of the **Burning** in integer notation (*eg. 1.0.0 = 10000*);
-* **timestamp** (*float*): the timestamp of the start of the session process, with milliseconds precision;
-* **requestTimestamp** (*float*): the timestamp of the start of the request, with milliseconds precision;
+* **timestamp** (*float*): the timestamp of the start of the session process, with microseconds precision;
+* **requestTimestamp** (*float*): the timestamp of the start of the request, with microseconds precision;
 
 #### shutdown
 
@@ -32,5 +38,5 @@ If the process is killed before terminating properly (eg. via `SIGKILL`), this t
 
 ##### Properties
 
-* **timestamp** (*float*): the timestamp at the shutdown moment, with milliseconds precision;
+* **timestamp** (*float*): the timestamp at the shutdown moment, with microseconds precision;
 * **clean** (*boolean*): will be `true` if it is a clean shutdown (*eg. the process was not killed*);

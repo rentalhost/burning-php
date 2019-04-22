@@ -10,7 +10,7 @@
      * Burning output session format, that will be stored at the $['burningDirectory'].
      *
      * Placeholders:
-     * - {%requestMs} will be replaced by the request time milliseconds.
+     * - {%requestMs} will be replaced by the request time microseconds.
      *
      * @type string
      */

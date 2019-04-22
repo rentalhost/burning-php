@@ -28,8 +28,9 @@ class SessionManager
         $this->burningConfiguration = BurningConfiguration::getInstance();
 
         $requestTimeFloat = $_SERVER['REQUEST_TIME_FLOAT'];
-        $requestMs        = (int) ($requestTimeFloat * 1000.0);
-        $sessionFile      = strtr($this->burningConfiguration->burningSessionFormat, [ '{%requestMs}' => $requestMs ]);
+        $sessionFile      = strtr($this->burningConfiguration->burningSessionFormat, [
+            '{%requestMs}' => str_pad(var_export($requestTimeFloat, true), 17, '0')
+        ]);
 
         $this->sessionFileHandler = fopen(getcwd() . '/' . $this->burningConfiguration->burningDirectory . '/' . $sessionFile, 'cb');
 
@@ -44,8 +45,8 @@ class SessionManager
 
         $initializeObjectInstance                   = new InitializeType;
         $initializeObjectInstance->version          = BurningConfiguration::getInstance()->getBurningVersionInt();
-        $initializeObjectInstance->timestamp        = round(microtime(true), 3);
-        $initializeObjectInstance->requestTimestamp = round($requestTimeFloat, 3);
+        $initializeObjectInstance->timestamp        = microtime(true);
+        $initializeObjectInstance->requestTimestamp = $requestTimeFloat;
 
         $this->write($initializeObjectInstance);
 
@@ -79,7 +80,7 @@ class SessionManager
     public function shutdown(): void
     {
         $shutdownObjectInstance            = $this->shutdownObjectInstance;
-        $shutdownObjectInstance->timestamp = round(microtime(true), 3);
+        $shutdownObjectInstance->timestamp = microtime(true);
         $shutdownObjectInstance->clean     = true;
 
         $this->write($shutdownObjectInstance);
@@ -96,7 +97,7 @@ class SessionManager
 
         if ($this->burningConfiguration->forceWriteShutdownObject) {
             $shutdownObjectInstance            = $this->shutdownObjectInstance;
-            $shutdownObjectInstance->timestamp = round(microtime(true), 3);
+            $shutdownObjectInstance->timestamp = microtime(true);
 
             $shutdownObjectContent = ",\n\t" . json_encode($shutdownObjectInstance) . "\n]\n";
 
