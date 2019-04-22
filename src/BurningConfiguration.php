@@ -8,8 +8,9 @@ use ColinODell\Json5\Json5Decoder;
 use Rentalhost\BurningPHP\Support\HasAttributes;
 
 /**
- * @property-read bool $devOnly
- * @property-read bool $disableXdebug
+ * @property string|null $burningVersion
+ * @property bool        $devOnly
+ * @property bool        $disableXdebug
  */
 class BurningConfiguration
 {
@@ -37,7 +38,19 @@ class BurningConfiguration
             $self->mergeWith($userConfigurationFile);
         }
 
+        if ($self->burningVersion === null) {
+            $composerJson         = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true);
+            $self->burningVersion = $composerJson['version'];
+        }
+
         return self::$instance = $self;
+    }
+
+    public function getBurningVersionInt(): int
+    {
+        [ $majorVersion, $minorVersion, $patchVersion ] = explode('.', $this->burningVersion);
+
+        return $majorVersion * 10000 + $minorVersion * 100 + $patchVersion;
     }
 
     private function mergeWith(?string $configurationFile): void

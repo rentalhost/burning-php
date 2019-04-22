@@ -1,5 +1,11 @@
 {
     /**
+     * Burning version. If null it will be identified automatically based on package version.
+     * @type int|null
+     */
+    "burningVersion": null,
+
+    /**
      * Enable Burning only if Composer was dumped in devMode.
      * @type boolean
      */
