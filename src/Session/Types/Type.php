@@ -8,6 +8,7 @@ use Rentalhost\BurningPHP\Support\HasAttributes;
 
 /**
  * @property string $type
+ * @property float  $timestamp
  */
 abstract class Type
     implements \JsonSerializable
@@ -26,5 +27,12 @@ abstract class Type
         $typeBasename = $staticMatch['base'];
 
         $this->type = strtolower(substr($typeBasename, 0, 1)) . substr($typeBasename, 1);
+    }
+
+    public function jsonSerialize(): array
+    {
+        $this->timestamp = microtime(true);
+
+        return $this->toArray();
     }
 }

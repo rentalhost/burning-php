@@ -17,6 +17,7 @@ The output file is named by default `.sess{%requestMs}.burning-session` and stor
 All types are fulfilled with some default properties:
 
 * **type** (*string*): the type name;
+* **timestamp** (*float*): the timestamp with precision of microseconds when the type was instantiated;
 
 ### Types
 
@@ -27,8 +28,7 @@ The `initialize` type is generated when a new session is started by the **Burnin
 ##### Properties
 
 * **version** (*int*): the version of the **Burning** in integer notation (*eg. 1.0.0 = 10000*);
-* **timestamp** (*float*): the timestamp of the start of the session process, with microseconds precision;
-* **requestTimestamp** (*float*): the timestamp of the start of the request, with microseconds precision;
+* **requestTimestamp** (*float*): the timestamp of the start of the request, with precision of microseconds;
 
 #### shutdown
 
@@ -38,5 +38,4 @@ If the process is killed before terminating properly (eg. via `SIGKILL`), this t
 
 ##### Properties
 
-* **timestamp** (*float*): the timestamp at the shutdown moment, with microseconds precision;
 * **clean** (*boolean*): will be `true` if it is a clean shutdown (*eg. the process was not killed*);

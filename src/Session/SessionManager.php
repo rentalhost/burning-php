@@ -45,7 +45,6 @@ class SessionManager
 
         $initializeObjectInstance                   = new InitializeType;
         $initializeObjectInstance->version          = BurningConfiguration::getInstance()->getBurningVersionInt();
-        $initializeObjectInstance->timestamp        = microtime(true);
         $initializeObjectInstance->requestTimestamp = $requestTimeFloat;
 
         $this->write($initializeObjectInstance);
@@ -79,9 +78,8 @@ class SessionManager
 
     public function shutdown(): void
     {
-        $shutdownObjectInstance            = $this->shutdownObjectInstance;
-        $shutdownObjectInstance->timestamp = microtime(true);
-        $shutdownObjectInstance->clean     = true;
+        $shutdownObjectInstance        = $this->shutdownObjectInstance;
+        $shutdownObjectInstance->clean = true;
 
         $this->write($shutdownObjectInstance);
 
@@ -96,10 +94,8 @@ class SessionManager
         fseek($this->sessionFileHandler, -3, SEEK_END);
 
         if ($this->burningConfiguration->forceWriteShutdownObject) {
-            $shutdownObjectInstance            = $this->shutdownObjectInstance;
-            $shutdownObjectInstance->timestamp = microtime(true);
-
-            $shutdownObjectContent = ",\n\t" . json_encode($shutdownObjectInstance) . "\n]\n";
+            $shutdownObjectInstance = $this->shutdownObjectInstance;
+            $shutdownObjectContent  = ",\n\t" . json_encode($shutdownObjectInstance) . "\n]\n";
 
             fwrite($this->sessionFileHandler, $shutdownObjectContent);
             fseek($this->sessionFileHandler, -strlen($shutdownObjectContent), SEEK_END);
