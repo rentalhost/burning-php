@@ -31,6 +31,16 @@
     "devOnly": true,
 
     /**
+     * Disable the Processor file cache.
+     * You should disable it only if you are modifying the Burning source.
+     *
+     * Actually, the cache files will be generated anyway, but it will be regenerated every time that it is requested.
+     *
+     * @type boolean
+     */
+    "disableCache": false,
+
+    /**
      * Disable Xdebug if it is enabled on your php.ini.
      * It will speed up Burning in 5~10x.
      *

@@ -14,16 +14,11 @@ class Processor
 {
     use SingletonPattern;
 
-    /** @var string */
-    private $cachesDirectory;
-
     /** @var Parser */
     private $parser;
 
     public function __construct()
     {
-        $this->cachesDirectory = BurningConfiguration::getInstance()->getBurningDirectory();
-
         $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7, null, [
             'usedAttributes' => [ 'comments', 'startLine', 'endLine', 'startTokenPos', 'endTokenPos', 'startFilePos', 'endFilePos' ]
         ]);
@@ -31,12 +26,16 @@ class Processor
 
     public function process(string $file): string
     {
-        $fileHash   = hash('sha256', $file);
-        $fileCached = $this->cachesDirectory . '/caches/' . $fileHash . '.php';
+        $burningConfiguration = BurningConfiguration::getInstance();
 
-        if (is_file($fileCached)) {
+        $fileHash   = hash('sha256', $file);
+        $fileCached = $burningConfiguration->getBurningDirectory() . '/caches/' . $fileHash . '.php';
+
+        if (!$burningConfiguration->disableCache && is_file($fileCached)) {
             return $fileCached;
         }
+
+        $fileStatements = $this->parser->parse(file_get_contents($file));
 
         $fileStatements = $this->parser->parse(file_get_contents($file));
 

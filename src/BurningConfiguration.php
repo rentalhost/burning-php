@@ -13,6 +13,7 @@ use Rentalhost\BurningPHP\Support\SingletonPattern;
  * @property string      $burningSessionFormat
  * @property string|null $burningVersion
  * @property bool        $devOnly
+ * @property bool        $disableCache
  * @property bool        $disableXdebug
  * @property bool        $ignoreDevelopmentPaths
  * @property bool        $forceWriteShutdownObject
