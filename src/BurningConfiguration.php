@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Rentalhost\BurningPHP;
 
 use ColinODell\Json5\Json5Decoder;
+use Rentalhost\BurningPHP\Support\HasAttributes;
 
 /**
  * @property-read bool $devOnly
@@ -12,14 +13,13 @@ use ColinODell\Json5\Json5Decoder;
  */
 class BurningConfiguration
 {
+    use HasAttributes;
+
     private const
         DEFAULT_CONFIGURATION_FILE = __DIR__ . '/../burning.json5';
 
     /** @var self */
     private static $instance;
-
-    /** @var mixed[] */
-    private $attributes = [];
 
     public static function getInstance(): self
     {
@@ -38,21 +38,6 @@ class BurningConfiguration
         }
 
         return self::$instance = $self;
-    }
-
-    public function __get(string $name)
-    {
-        return $this->attributes[$name] ?? null;
-    }
-
-    public function __set(string $name, $value)
-    {
-        $this->attributes[$name] = $value;
-    }
-
-    public function __isset(string $name)
-    {
-        return array_key_exists($name, $this->attributes);
     }
 
     private function mergeWith(?string $configurationFile): void
