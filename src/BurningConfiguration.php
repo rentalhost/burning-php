@@ -19,7 +19,7 @@ class BurningConfiguration
     use HasAttributes;
 
     private const
-        DEFAULT_CONFIGURATION_FILE = __DIR__ . '/../burning.json5';
+        DEFAULT_CONFIGURATION_FILE = __DIR__ . '/../.burning.json';
 
     /** @var self */
     private static $instance;
@@ -31,7 +31,7 @@ class BurningConfiguration
         }
 
         $defaultConfigurationFile = realpath(self::DEFAULT_CONFIGURATION_FILE);
-        $userConfigurationFile    = realpath(getcwd() . '/burning.json5') ?: null;
+        $userConfigurationFile    = realpath(getcwd() . '/.burning.json') ?: null;
 
         $self = new static;
         $self->mergeWith($defaultConfigurationFile);

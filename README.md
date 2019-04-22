@@ -1,6 +1,12 @@
 # Burning PHP  
 
-**Burning PHP** is a runtime code analyzer that will help you to find bottlenecks in your script by modifying all source codes with a special structure before it run in fact, then you could use some external tools to read this output file to identify a lot of kind of issues.  
+**Burning PHP** is a runtime code analyzer that will help you to find bottlenecks in your script by modifying all source codes with a special structure before it run in fact, then you could use some external tools to read this output file to identify a lot of kind of issues.
+
+## Configuration
+
+You could customize how *Burning PHP* will run by creating a file called `.burning.json`. It is a JSON5 compatible file that contains all available configurations of this package.
+
+See the file [.burning.json] comments to understand how each properties works.
 
 ## Output Structure  
 

@@ -1,25 +1,31 @@
 {
     /**
      * Burning output directory, based on the current working dir.
+     *
      * @type string
      */
     "burningDirectory": ".burning",
 
     /**
      * Burning output session format, that will be stored at the $['burningDirectory'].
+     *
+     * Placeholders:
      * - {%requestMs} will be replaced by the request time milliseconds.
+     *
      * @type string
      */
     "burningSessionFormat": ".sess{%requestMs}.burning-session",
 
     /**
      * Burning version. If null it will be identified automatically based on package version.
+     *
      * @type int|null
      */
     "burningVersion": null,
 
     /**
      * Enable Burning only if Composer was dumped in devMode.
+     *
      * @type boolean
      */
     "devOnly": true,
@@ -27,7 +33,18 @@
     /**
      * Disable Xdebug if it is enabled on your php.ini.
      * It will speed up Burning in 5~10x.
+     *
      * @type boolean
      */
-    "disableXdebug": true
+    "disableXdebug": true,
+
+    /**
+     * Enabling it will force write shutdown object even if process is killed before it be available.
+     * By otherside, it will reduce the Burning performance a little bit.
+     *
+     * If you don't need to know any shutdown properties, so is recommended you keep it disabled.
+     *
+     * @type boolean
+     */
+    "forceWriteShutdownObject": false
 }
