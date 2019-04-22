@@ -21,6 +21,17 @@ All types are fulfilled with some default properties:
 
 ### Types
 
+#### autoload
+
+The `autoload` type is generated when a class is autoloaded by the **Burning** autoloader. Naturally, autoloaded files must be considered too as required.
+
+Only autoloaded classes from target package are written.
+
+##### Properties
+
+* **classname** (*string*): the namespaced name of class;
+* **file** (*string*): the absolute path of the autoloaded class;
+
 #### initialize
 
 The `initialize` type is generated when a new session is started by the **Burning**. It counterpart is the `shutdown` type.
