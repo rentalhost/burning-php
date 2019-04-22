@@ -28,14 +28,12 @@ class Processor
     {
         $burningConfiguration = BurningConfiguration::getInstance();
 
-        $fileHash   = hash('sha256', $file);
+        $fileHash   = preg_replace('/\..+$/', null, basename($file)) . '_' . hash('sha256', $file);
         $fileCached = $burningConfiguration->getBurningDirectory() . '/caches/' . $fileHash . '.php';
 
         if (!$burningConfiguration->disableCache && is_file($fileCached)) {
             return $fileCached;
         }
-
-        $fileStatements = $this->parser->parse(file_get_contents($file));
 
         $fileStatements = $this->parser->parse(file_get_contents($file));
 
