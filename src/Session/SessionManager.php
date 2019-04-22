@@ -31,7 +31,7 @@ class SessionManager
             '{%requestMs}' => str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0')
         ]);
 
-        $this->sessionFileHandler = fopen(getcwd() . '/' . $this->burningConfiguration->burningDirectory . '/sessions/' . $sessionFile, 'cb');
+        $this->sessionFileHandler = fopen($this->burningConfiguration->getBurningDirectory() . '/sessions/' . $sessionFile, 'cb');
 
         ftruncate($this->sessionFileHandler, 0);
         fwrite($this->sessionFileHandler, "[\n]\n");
@@ -62,18 +62,19 @@ class SessionManager
 
     private static function generateControlDirectory(): void
     {
-        $currentWorkingDir       = getcwd();
         $burningConfiguration    = BurningConfiguration::getInstance();
-        $burningControlDirectory = $currentWorkingDir . '/' . $burningConfiguration->burningDirectory;
+        $burningControlDirectory = $burningConfiguration->getBurningDirectory();
 
         $burningDirectories = [
             $burningControlDirectory,
             $burningControlDirectory . '/sessions'
         ];
 
+        $workingDirPerms = fileperms($burningConfiguration->currentWorkingDir);
+
         foreach ($burningDirectories as $burningDirectory) {
             if (!is_dir($burningDirectory)) {
-                mkdir($burningDirectory, fileperms($currentWorkingDir));
+                mkdir($burningDirectory, $workingDirPerms);
             }
         }
     }

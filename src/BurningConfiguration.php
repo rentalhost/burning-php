@@ -25,6 +25,9 @@ class BurningConfiguration
     /** @var self */
     private static $instance;
 
+    /** @var string */
+    public $currentWorkingDir;
+
     public static function getInstance(): self
     {
         if (self::$instance) {
@@ -37,6 +40,8 @@ class BurningConfiguration
         $self = new static;
         $self->mergeWith($defaultConfigurationFile);
 
+        $self->currentWorkingDir = getcwd();
+
         if ($userConfigurationFile !== null && $defaultConfigurationFile !== $userConfigurationFile) {
             $self->mergeWith($userConfigurationFile);
         }
@@ -47,6 +52,11 @@ class BurningConfiguration
         }
 
         return self::$instance = $self;
+    }
+
+    public function getBurningDirectory(): string
+    {
+        return $this->currentWorkingDir . DIRECTORY_SEPARATOR . $this->burningDirectory;
     }
 
     public function getBurningVersionInt(): int
