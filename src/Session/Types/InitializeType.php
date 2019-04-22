@@ -7,8 +7,9 @@ namespace Rentalhost\BurningPHP\Session\Types;
 use Rentalhost\BurningPHP\BurningConfiguration;
 
 /**
- * @property int   $version
- * @property float $requestTimestamp
+ * @property int    $version
+ * @property float  $requestTimestamp
+ * @property string $workingDirectory
  */
 class InitializeType
     extends Type
@@ -19,5 +20,6 @@ class InitializeType
 
         $this->version          = BurningConfiguration::getInstance()->getBurningVersionInt();
         $this->requestTimestamp = $_SERVER['REQUEST_TIME_FLOAT'];
+        $this->workingDirectory = getcwd();
     }
 }

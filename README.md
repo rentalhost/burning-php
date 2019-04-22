@@ -40,6 +40,7 @@ The `initialize` type is generated when a new session is started by the **Burnin
 
 * **version** (*int*): the version of the **Burning** in integer notation (*eg. 1.0.0 = 10000*);
 * **requestTimestamp** (*float*): the timestamp of the start of the request, with precision of microseconds;
+* **workingDirectory** (*string*): the working directory of the process;
 
 #### shutdown
 
