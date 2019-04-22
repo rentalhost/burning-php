@@ -80,8 +80,7 @@ class SessionManager
     {
         $shutdownObjectInstance        = $this->shutdownObjectInstance;
         $shutdownObjectInstance->clean = true;
-
-        $this->write($shutdownObjectInstance);
+        $shutdownObjectInstance->write();
 
         fclose($this->sessionFileHandler);
     }

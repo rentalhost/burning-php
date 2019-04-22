@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Rentalhost\BurningPHP\Session\Types;
 
+use Rentalhost\BurningPHP\Session\SessionManager;
 use Rentalhost\BurningPHP\Support\HasAttributes;
 
 /**
@@ -34,5 +35,10 @@ abstract class Type
         $this->timestamp = microtime(true);
 
         return $this->toArray();
+    }
+
+    public function write(): void
+    {
+        SessionManager::getInstance()->write($this);
     }
 }
