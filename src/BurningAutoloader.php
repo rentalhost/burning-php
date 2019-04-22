@@ -5,10 +5,12 @@ declare(strict_types = 1);
 namespace Rentalhost\BurningPHP;
 
 use Composer\Autoload\ClassLoader;
+use Rentalhost\BurningPHP\Processor\Processor;
 use Rentalhost\BurningPHP\Session\Types\AutoloadType;
 use Rentalhost\BurningPHP\Support\Deterministic;
 use Rentalhost\BurningPHP\Support\SingletonPattern;
 use Symfony\Component\Filesystem\Filesystem;
+use function Composer\Autoload\includeFile;
 
 class BurningAutoloader
 {
@@ -91,11 +93,13 @@ class BurningAutoloader
             }
         }
 
+        includeFile(Processor::getInstance()->process($file));
+
         $autoloadObjectInstance            = new AutoloadType;
         $autoloadObjectInstance->classname = $classname;
         $autoloadObjectInstance->file      = $file;
         $autoloadObjectInstance->write();
 
-        return false;
+        return true;
     }
 }
