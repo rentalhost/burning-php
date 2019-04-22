@@ -5,9 +5,9 @@ declare(strict_types = 1);
 namespace Rentalhost\BurningPHP\Session;
 
 use Rentalhost\BurningPHP\BurningConfiguration;
+use Rentalhost\BurningPHP\Session\Types\AbstractType;
 use Rentalhost\BurningPHP\Session\Types\InitializeType;
 use Rentalhost\BurningPHP\Session\Types\ShutdownType;
-use Rentalhost\BurningPHP\Session\Types\AbstractType;
 
 class SessionManager
 {
@@ -31,7 +31,7 @@ class SessionManager
             '{%requestMs}' => str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0')
         ]);
 
-        $this->sessionFileHandler = fopen(getcwd() . '/' . $this->burningConfiguration->burningDirectory . '/' . $sessionFile, 'cb');
+        $this->sessionFileHandler = fopen(getcwd() . '/' . $this->burningConfiguration->burningDirectory . '/sessions/' . $sessionFile, 'cb');
 
         ftruncate($this->sessionFileHandler, 0);
         fwrite($this->sessionFileHandler, "[\n]\n");
@@ -53,21 +53,28 @@ class SessionManager
             return self::$instance;
         }
 
-        self::makeOutputDirectory();
+        self::generateControlDirectory();
 
         $instance = new self;
 
         return self::$instance = $instance;
     }
 
-    private static function makeOutputDirectory(): void
+    private static function generateControlDirectory(): void
     {
-        $currentWorkingDir    = getcwd();
-        $burningConfiguration = BurningConfiguration::getInstance();
-        $burningDirectory     = $currentWorkingDir . '/' . $burningConfiguration->burningDirectory;
+        $currentWorkingDir       = getcwd();
+        $burningConfiguration    = BurningConfiguration::getInstance();
+        $burningControlDirectory = $currentWorkingDir . '/' . $burningConfiguration->burningDirectory;
 
-        if (!is_dir($burningDirectory)) {
-            mkdir($burningDirectory, fileperms($currentWorkingDir));
+        $burningDirectories = [
+            $burningControlDirectory,
+            $burningControlDirectory . '/sessions'
+        ];
+
+        foreach ($burningDirectories as $burningDirectory) {
+            if (!is_dir($burningDirectory)) {
+                mkdir($burningDirectory, fileperms($currentWorkingDir));
+            }
         }
     }
 
