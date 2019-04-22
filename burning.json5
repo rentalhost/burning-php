@@ -1,0 +1,14 @@
+{
+    /**
+     * Enable Burning only if Composer was dumped in devMode.
+     * @type boolean
+     */
+    "devOnly": true,
+
+    /**
+     * Disable Xdebug if it is enabled on your php.ini.
+     * It will speed up Burning in 5~10x.
+     * @type boolean
+     */
+    "disableXdebug": true
+}

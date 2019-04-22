@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace Rentalhost\BurningPHP;
 
+use ColinODell\Json5\Json5Decoder;
+
 /**
  * @property-read bool $devOnly
  * @property-read bool $disableXdebug
@@ -11,7 +13,7 @@ namespace Rentalhost\BurningPHP;
 class BurningConfiguration
 {
     private const
-        DEFAULT_CONFIGURATION_FILE = __DIR__ . '/../burning.json';
+        DEFAULT_CONFIGURATION_FILE = __DIR__ . '/../burning.json5';
 
     /** @var self */
     private static $instance;
@@ -26,7 +28,7 @@ class BurningConfiguration
         }
 
         $defaultConfigurationFile = realpath(self::DEFAULT_CONFIGURATION_FILE);
-        $userConfigurationFile    = realpath(getcwd() . '/burning.json') ?: null;
+        $userConfigurationFile    = realpath(getcwd() . '/burning.json5') ?: null;
 
         $self = new static;
         $self->mergeWith($defaultConfigurationFile);
@@ -56,7 +58,7 @@ class BurningConfiguration
     private function mergeWith(?string $configurationFile): void
     {
         if ($configurationFile !== null && is_file($configurationFile) && is_readable($configurationFile)) {
-            $this->attributes = array_replace_recursive($this->attributes, json_decode(file_get_contents($configurationFile), true));
+            $this->attributes = array_replace_recursive($this->attributes, Json5Decoder::decode(file_get_contents($configurationFile), true));
         }
     }
 }
