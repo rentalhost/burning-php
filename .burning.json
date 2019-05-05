@@ -2,7 +2,7 @@
     /**
      * Burning control directory, based on the current working dir.
      *
-     * @type string
+     * @type {string}
      */
     "burningDirectory": ".burning",
 
@@ -12,21 +12,21 @@
      * Placeholders:
      * - {%requestMs} will be replaced by the request time microseconds.
      *
-     * @type string
+     * @type {string}
      */
     "burningSessionFormat": ".sess{%requestMs}.burning-session",
 
     /**
      * Burning version. If null it will be identified automatically based on package version.
      *
-     * @type int|null
+     * @type {?number}
      */
     "burningVersion": null,
 
     /**
      * Enable Burning only if Composer was dumped in devMode.
      *
-     * @type boolean
+     * @type {boolean}
      */
     "devOnly": true,
 
@@ -36,7 +36,7 @@
      *
      * Actually, the cache files will be generated anyway, but it will be regenerated every time that it is requested.
      *
-     * @type boolean
+     * @type {boolean}
      */
     "disableCache": false,
 
@@ -44,7 +44,7 @@
      * Disable Xdebug if it is enabled on your php.ini.
      * It will speed up Burning in 5~10x.
      *
-     * @type boolean
+     * @type {boolean}
      */
     "disableXdebug": true,
 
@@ -52,7 +52,7 @@
      * Enabling this option will ignore all development paths declared in composer.json[autoload-dev].
      * It is useful to ignore testing files that will not be so useful on analysis process.
      *
-     * @type boolean
+     * @type {boolean}
      */
     "ignoreDevelopmentPaths": true,
 
@@ -62,7 +62,7 @@
      *
      * If you don't need to know any shutdown properties, so is recommended you keep it disabled.
      *
-     * @type boolean
+     * @type {boolean}
      */
     "forceWriteShutdownObject": false
 }
