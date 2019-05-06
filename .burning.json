@@ -58,11 +58,19 @@
 
     /**
      * Enabling it will force write shutdown object even if process is killed before it be available.
-     * By otherside, it will reduce the Burning performance a little bit.
+     * By otherside, it will reduce the Burning performance a lot.
      *
      * If you don't need to know any shutdown properties, so is recommended you keep it disabled.
+     * Maybe you can deduce it based on the last operation timestamp performed.
      *
      * @type {boolean}
      */
-    "forceWriteShutdownObject": false
+    "forceWriteShutdownObject": false,
+
+    /**
+     * Set the function name that is generated to be used to access the SessionProxyFactory unique instance from a script rewritten by Burning.
+     *
+     * @type {string}
+     */
+    "sessionProxyFactoryFunction": "_bspf"
 }

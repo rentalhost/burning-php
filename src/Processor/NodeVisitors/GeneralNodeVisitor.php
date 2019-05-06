@@ -2,13 +2,12 @@
 
 declare(strict_types = 1);
 
-namespace Rentalhost\BurningPHP\Processor;
+namespace Rentalhost\BurningPHP\Processor\NodeVisitors;
 
 use PhpParser\Node;
-use PhpParser\NodeVisitorAbstract;
 
-class NodeVisitor
-    extends NodeVisitorAbstract
+class GeneralNodeVisitor
+    extends AbstractNodeVisitor
 {
     /** @var string */
     private $file;
@@ -18,8 +17,12 @@ class NodeVisitor
         $this->file = $file;
     }
 
-    public function leaveNode(Node $node)
+    public function enterNode(Node $node)
     {
+        if ($node instanceof Node\Stmt\ClassMethod) {
+            return static::traverseWithNodeVisitor($node, new ClassMethodNodeVisitor($node));
+        }
+
         if ($node instanceof Node\Scalar\MagicConst\Dir) {
             return new Node\Scalar\String_(dirname($this->file));
         }
@@ -28,6 +31,6 @@ class NodeVisitor
             return new Node\Scalar\String_($this->file);
         }
 
-        return parent::leaveNode($node);
+        return parent::enterNode($node);
     }
 }

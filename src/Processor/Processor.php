@@ -9,6 +9,7 @@ use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard as PrettyPrinter;
 use Rentalhost\BurningPHP\BurningConfiguration;
+use Rentalhost\BurningPHP\Processor\NodeVisitors\GeneralNodeVisitor;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 class Processor
@@ -21,7 +22,7 @@ class Processor
     public function __construct()
     {
         $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7, null, [
-            'usedAttributes' => [ 'comments', 'startLine', 'endLine', 'startTokenPos', 'endTokenPos', 'startFilePos', 'endFilePos' ]
+            'usedAttributes' => [ 'comments', 'startLine', 'endLine', 'startTokenPos', 'endTokenPos' ]
         ]);
     }
 
@@ -32,14 +33,10 @@ class Processor
         $fileHash   = preg_replace('/\..+$/', null, basename($file)) . '_' . hash('sha256', $file);
         $fileCached = $burningConfiguration->getBurningDirectory() . '/caches/' . $fileHash . '.php';
 
-        if (!$burningConfiguration->disableCache && is_file($fileCached)) {
-            return $fileCached;
-        }
-
         $fileStatements = $this->parser->parse(file_get_contents($file));
 
         $traverser = new NodeTraverser;
-        $traverser->addVisitor(new NodeVisitor($file));
+        $traverser->addVisitor(new GeneralNodeVisitor($file));
 
         $modifiedFileStatements = $traverser->traverse($fileStatements);
 

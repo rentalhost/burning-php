@@ -17,6 +17,7 @@ use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
  * @property bool        $disableXdebug
  * @property bool        $ignoreDevelopmentPaths
  * @property bool        $forceWriteShutdownObject
+ * @property string      $sessionProxyFactoryFunction
  */
 class BurningConfiguration
 {
@@ -28,6 +29,9 @@ class BurningConfiguration
 
     /** @var string */
     public $currentWorkingDir;
+
+    /** @var array */
+    private $hash;
 
     /** @var array */
     private $targetComposer = [];
@@ -55,6 +59,8 @@ class BurningConfiguration
             $selfComposer         = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true);
             $this->burningVersion = $selfComposer['version'];
         }
+
+        $this->hash = hash('sha256', json_encode($this->attributes));
     }
 
     public function getBurningDirectory(): string
@@ -67,6 +73,14 @@ class BurningConfiguration
         [ $majorVersion, $minorVersion, $patchVersion ] = explode('.', $this->burningVersion);
 
         return $majorVersion * 10000 + $minorVersion * 100 + $patchVersion;
+    }
+
+    public function getHash(): array
+    {
+        return [
+            'version' => $this->getBurningVersionInt(),
+            'hash'    => $this->hash
+        ];
     }
 
     /**

@@ -7,7 +7,7 @@ namespace Rentalhost\BurningPHP\Support\Traits;
 trait HasAttributesTrait
 {
     /** @var mixed[] */
-    private $attributes = [];
+    protected $attributes = [];
 
     public function __get(string $name)
     {

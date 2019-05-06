@@ -6,7 +6,9 @@ namespace Rentalhost\BurningPHP;
 
 use Composer\Autoload\ClassLoader;
 use Rentalhost\BurningPHP\Processor\Processor;
-use Rentalhost\BurningPHP\Session\Types\AutoloadType;
+use Rentalhost\BurningPHP\Session\SessionProxyFactory;
+use Rentalhost\BurningPHP\Session\Types\InitializeType;
+use Rentalhost\BurningPHP\Session\Types\PathType;
 use Rentalhost\BurningPHP\Support\Deterministic;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 use Symfony\Component\Filesystem\Filesystem;
@@ -30,6 +32,14 @@ class BurningAutoloader
         );
     }
 
+    private static function clearCache(string $burningCacheDirectory, int $workingDirPerms): void
+    {
+        $filesystem = new Filesystem;
+        $filesystem->remove($burningCacheDirectory);
+
+        mkdir($burningCacheDirectory, $workingDirPerms);
+    }
+
     private static function generateControlDirectory(): void
     {
         $burningConfiguration    = BurningConfiguration::getInstance();
@@ -50,25 +60,29 @@ class BurningAutoloader
             }
         }
 
-        $versionFile = $burningControlDirectory . '/version';
+        $hashFile          = $burningControlDirectory . '/HASH';
+        $configurationHash = json_encode($burningConfiguration->getHash());
 
-        if (is_file($versionFile)) {
-            $versionValue = file_get_contents($versionFile);
+        if ($burningConfiguration->disableCache) {
+            self::clearCache($burningCacheDirectory, $workingDirPerms);
+        }
+        else if (is_file($hashFile)) {
+            $hashValue = file_get_contents($hashFile);
 
-            if ($versionValue !== (string) $burningConfiguration->getBurningVersionInt()) {
-                $filesystem = new Filesystem;
-                $filesystem->remove($burningCacheDirectory);
-
-                mkdir($burningCacheDirectory, $workingDirPerms);
+            if ($hashValue !== $configurationHash) {
+                self::clearCache($burningCacheDirectory, $workingDirPerms);
             }
         }
 
-        file_put_contents($versionFile, $burningConfiguration->getBurningVersionInt());
+        file_put_contents($hashFile, $configurationHash);
     }
 
     public function register(): void
     {
         self::generateControlDirectory();
+
+        SessionProxyFactory::register();
+        InitializeType::write();
 
         spl_autoload_register([ $this, 'autoload' ], true, true);
     }
@@ -95,10 +109,12 @@ class BurningAutoloader
 
         includeFile(Processor::getInstance()->process($file));
 
-        $autoloadObjectInstance            = new AutoloadType;
-        $autoloadObjectInstance->classname = $classname;
-        $autoloadObjectInstance->file      = $file;
-        $autoloadObjectInstance->write();
+        $burningWorkingLength = strlen(BurningConfiguration::getInstance()->currentWorkingDir);
+
+        PathType::write([
+            'file'        => substr($file, $burningWorkingLength + 1),
+            'autoloading' => $classname
+        ]);
 
         return true;
     }

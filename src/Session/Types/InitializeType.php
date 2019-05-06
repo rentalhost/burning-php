@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Rentalhost\BurningPHP\Session\Types;
 
 use Rentalhost\BurningPHP\BurningConfiguration;
+use Rentalhost\BurningPHP\Session\Types\Abstracts\AbstractType;
 
 /**
  * @property int    $version
@@ -14,12 +15,12 @@ use Rentalhost\BurningPHP\BurningConfiguration;
 class InitializeType
     extends AbstractType
 {
-    public function __construct()
+    public static function generate(?array $args = null): array
     {
-        parent::__construct();
-
-        $this->version          = BurningConfiguration::getInstance()->getBurningVersionInt();
-        $this->requestTimestamp = $_SERVER['REQUEST_TIME_FLOAT'];
-        $this->workingDirectory = getcwd();
+        return parent::generate(array_replace($args ?? [], [
+            'version'          => BurningConfiguration::getInstance()->getBurningVersionInt(),
+            'requestTimestamp' => $_SERVER['REQUEST_TIME_FLOAT'],
+            'workingDirectory' => getcwd()
+        ]));
     }
 }

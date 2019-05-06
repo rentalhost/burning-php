@@ -11,7 +11,7 @@ class Deterministic
 
     public static function withClosure(\Closure $closure)
     {
-        $closureHash = hash('sha256', (new \ReflectionFunction($closure))->__toString());
+        $closureHash = hash('sha256', (string) new \ReflectionFunction($closure));
 
         if (array_key_exists($closureHash, self::$cached)) {
             return self::$cached[$closureHash];
