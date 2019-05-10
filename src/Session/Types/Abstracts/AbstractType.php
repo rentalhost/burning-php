@@ -4,63 +4,45 @@ declare(strict_types = 1);
 
 namespace Rentalhost\BurningPHP\Session\Types\Abstracts;
 
-use Rentalhost\BurningPHP\Session\SessionProxyFactory;
+use Rentalhost\BurningPHP\Session\SessionManager;
 use Rentalhost\BurningPHP\Support\Traits\HasAttributesTrait;
+use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
-/**
- * @property string   $type
- * @property float    $timestamp
- * @property int|null $offset
- * @property int|null $length
- */
 abstract class AbstractType
     implements \JsonSerializable
 {
-    use HasAttributesTrait;
+    use HasAttributesTrait,
+        SingletonPatternTrait {
+        SingletonPatternTrait::getInstance as getSingletonInstance;
+    }
 
-    private const
-        REGEXP_BASE_IDENTIFIER = '<\\\\(?<base>[^\\\\]+)Type$>';
-
-    public static function generate(?array $args = null): array
+    /**
+     * @return static
+     */
+    public static function getInstance(): self
     {
-        if ($args === null) {
-            return [
-                'type'      => static::class,
-                'timestamp' => microtime(true)
-            ];
+        $instance = self::getInstanceNullable();
+
+        if ($instance) {
+            return $instance;
         }
 
-        return array_replace($args, [
-            'type'      => static::class,
-            'timestamp' => microtime(true)
-        ]);
+        $instance = static::getSingletonInstance();
+
+        SessionManager::getInstance()->register($instance);
+
+        return $instance;
     }
 
-    public static function getType(): String
+    public static function execute(): void
     {
-        if (!preg_match(self::REGEXP_BASE_IDENTIFIER, static::class, $staticMatch)) {
-            throw new \RuntimeException('a type class "' . static::class . '" should be suffixed with Type');
-        }
-
-        $typeBasename = $staticMatch['base'];
-
-        return strtolower(substr($typeBasename, 0, 1)) . substr($typeBasename, 1);
+        static::getInstance();
     }
 
-    public static function postProcessing(array $args): array
+    /**
+     * @return mixed|void
+     */
+    public function call(?array $args = null)
     {
-        return $args;
-    }
-
-    public static function write(?array $args = null): void
-    {
-        SessionProxyFactory::write(static::generate($args));
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->timestamp = microtime(true);
-
-        return $this->toArray();
     }
 }

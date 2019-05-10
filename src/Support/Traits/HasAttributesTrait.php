@@ -9,9 +9,9 @@ trait HasAttributesTrait
     /** @var mixed[] */
     protected $attributes = [];
 
-    public function __get(string $name)
+    public function &__get(string $name)
     {
-        return $this->attributes[$name] ?? null;
+        return $this->attributes[$name];
     }
 
     public function __set(string $name, $value)
@@ -31,6 +31,16 @@ trait HasAttributesTrait
 
     public function toArray(): array
     {
-        return $this->attributes;
+        $attributes = $this->attributes;
+
+        foreach ((new \ReflectionClass($this))->getProperties(\ReflectionProperty::IS_PUBLIC) as $reflectionProperty) {
+            $attributes[$reflectionProperty->name] = $reflectionProperty->getValue($this);
+        }
+
+        return array_map(static function ($value) {
+            return $value instanceof \JsonSerializable
+                ? $value->jsonSerialize()
+                : $value;
+        }, $attributes);
     }
 }

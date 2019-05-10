@@ -21,9 +21,7 @@ class Processor
 
     public function __construct()
     {
-        $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7, null, [
-            'usedAttributes' => [ 'comments', 'startLine', 'endLine', 'startTokenPos', 'endTokenPos' ]
-        ]);
+        $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7, null, [ 'usedAttributes' => [ 'comments' ] ]);
     }
 
     public function process(string $file): string

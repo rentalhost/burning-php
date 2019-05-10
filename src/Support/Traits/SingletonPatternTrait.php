@@ -6,24 +6,35 @@ namespace Rentalhost\BurningPHP\Support\Traits;
 
 trait SingletonPatternTrait
 {
-    /** @var static */
-    private static $instance;
+    /** @var static[] */
+    protected static $instances = [];
 
     /**
      * @return static
      */
     public static function getInstance(): self
     {
-        if (static::$instance) {
-            return static::$instance;
+        $instance = self::getInstanceNullable();
+
+        if ($instance) {
+            return $instance;
         }
 
-        static::initialize();
+        $instance = new static;
+        $instance->initialize();
 
-        return static::$instance = new static;
+        return self::$instances[static::class] = $instance;
     }
 
-    protected static function initialize(): void
+    /**
+     * @return static|null
+     */
+    private static function getInstanceNullable(): ?self
+    {
+        return self::$instances[static::class] ?? null;
+    }
+
+    public function initialize(): void
     {
     }
 }

@@ -6,7 +6,7 @@ namespace Rentalhost\BurningPHP\Processor\NodeVisitors;
 
 use PhpParser\Node;
 use Rentalhost\BurningPHP\Session\SessionProxyFactory;
-use Rentalhost\BurningPHP\Session\Types\CallType;
+use Rentalhost\BurningPHP\Session\Types\Call\CallType;
 
 class ClassMethodNodeVisitor
     extends AbstractNodeVisitor
@@ -14,11 +14,13 @@ class ClassMethodNodeVisitor
     public function __construct(Node\Stmt\ClassMethod $classMethodStatement)
     {
         if ($classMethodStatement->stmts) {
-            array_unshift($classMethodStatement->stmts, SessionProxyFactory::createWithNode(
+            array_unshift($classMethodStatement->stmts, SessionProxyFactory::create(
                 CallType::class,
-                $classMethodStatement, [
-                    'name' => new Node\Expr\Array_([ new Node\Scalar\MagicConst\Class_, new Node\Scalar\MagicConst\Function_ ])
-                ]
+                [
+                    'class'    => new Node\Scalar\MagicConst\Class_,
+                    'function' => new Node\Scalar\MagicConst\Function_
+                ],
+                $classMethodStatement
             ));
         }
     }

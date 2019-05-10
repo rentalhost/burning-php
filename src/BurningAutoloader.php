@@ -7,8 +7,8 @@ namespace Rentalhost\BurningPHP;
 use Composer\Autoload\ClassLoader;
 use Rentalhost\BurningPHP\Processor\Processor;
 use Rentalhost\BurningPHP\Session\SessionProxyFactory;
-use Rentalhost\BurningPHP\Session\Types\InitializeType;
-use Rentalhost\BurningPHP\Session\Types\PathType;
+use Rentalhost\BurningPHP\Session\Types\Initialize\InitializeType;
+use Rentalhost\BurningPHP\Session\Types\Path\PathType;
 use Rentalhost\BurningPHP\Support\Deterministic;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 use Symfony\Component\Filesystem\Filesystem;
@@ -82,7 +82,7 @@ class BurningAutoloader
         self::generateControlDirectory();
 
         SessionProxyFactory::register();
-        InitializeType::write();
+        InitializeType::execute();
 
         spl_autoload_register([ $this, 'autoload' ], true, true);
     }
@@ -111,10 +111,7 @@ class BurningAutoloader
 
         $burningWorkingLength = strlen(BurningConfiguration::getInstance()->currentWorkingDir);
 
-        PathType::write([
-            'file'        => substr($file, $burningWorkingLength + 1),
-            'autoloading' => $classname
-        ]);
+        PathType::getInstance()->registerClass(substr($file, $burningWorkingLength + 1), $classname);
 
         return true;
     }

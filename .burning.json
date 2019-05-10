@@ -17,6 +17,14 @@
     "burningSessionFormat": ".sess{%requestMs}.burning-session",
 
     /**
+     * Enable this option then the session output will be a pretty printed JSON.
+     * It will increase the output file in about 300% ~ 500%, and is recommended you keep it disabled.
+     *
+     * @type {boolean}
+     */
+    "burningSessionPrettyPrint": false,
+
+    /**
      * Burning version. If null it will be identified automatically based on package version.
      *
      * @type {?number}
