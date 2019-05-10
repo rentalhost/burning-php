@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Rentalhost\BurningPHP\Session\Types\Call;
 
+use Rentalhost\BurningPHP\Session\Types\Interfaces\PositionalAttributesInterface;
 use Rentalhost\BurningPHP\Support\Fluent;
 
 /**
@@ -11,6 +12,7 @@ use Rentalhost\BurningPHP\Support\Fluent;
  */
 class CallReference
     extends Fluent
+    implements PositionalAttributesInterface
 {
     public function __construct()
     {

@@ -32,8 +32,9 @@ class SessionProxyFactory
         }
 
         if ($node instanceof Node\Stmt) {
-            /** @todo calculates $offset and $length based on $node. */
-            $args = (array) $args;
+            $args           = (array) $args;
+            $args['offset'] = $node->getStartFilePos();
+            $args['length'] = $node->getEndFilePos() - $args['offset'];
         }
 
         return new Node\Stmt\Expression(new Node\Expr\FuncCall(

@@ -6,10 +6,16 @@ namespace Rentalhost\BurningPHP\Session\Types\Call;
 
 use Rentalhost\BurningPHP\Session\Types\Abstracts\AbstractType;
 
+/**
+ * @property CallReference[] $functions
+ */
 class CallType
     extends AbstractType
 {
-    public $functions = [];
+    public function __construct()
+    {
+        $this->functions = [];
+    }
 
     private static function getFunctionName(array $args): string
     {
@@ -25,7 +31,11 @@ class CallType
         $functionName = self::getFunctionName($args);
 
         if (!array_key_exists($functionName, $this->functions)) {
-            $this->functions[$functionName] = new CallReference;
+            $callReferenceInit         = new CallReference;
+            $callReferenceInit->offset = $args['offset'];
+            $callReferenceInit->length = $args['length'];
+
+            $this->functions[$functionName] = $callReferenceInit;
         }
 
         $callFlow         = new CallFlow;

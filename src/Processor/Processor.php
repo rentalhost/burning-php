@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Rentalhost\BurningPHP\Processor;
 
+use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
@@ -21,7 +22,9 @@ class Processor
 
     public function __construct()
     {
-        $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7, null, [ 'usedAttributes' => [ 'comments' ] ]);
+        $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7, new Lexer([
+            'usedAttributes' => [ 'startFilePos', 'endFilePos' ]
+        ]));
     }
 
     public function process(string $file): string
