@@ -31,12 +31,13 @@ class SessionManager
         ShutdownType::execute();
 
         $burningConfiguration = BurningConfiguration::getInstance();
-        $sessionPrettyPrint   = $burningConfiguration->burningSessionPrettyPrint ? JSON_PRETTY_PRINT : 0;
         $sessionFile          = strtr($burningConfiguration->burningSessionFormat, [
             '{%requestMs}' => str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0')
         ]);
 
         file_put_contents($burningConfiguration->getBurningDirectory() . '/sessions/' . $sessionFile,
-            json_encode(array_map(static function (AbstractType $type) { return $type->toArray(); }, $this->registeredTypes), $sessionPrettyPrint));
+            json_encode(array_map(static function (AbstractType $type) {
+                return $type->toArray();
+            }, $this->registeredTypes), JSON_THROW_ON_ERROR));
     }
 }
