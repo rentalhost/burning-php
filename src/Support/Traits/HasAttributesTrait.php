@@ -14,12 +14,12 @@ trait HasAttributesTrait
         return $this->attributes[$name];
     }
 
-    public function __set(string $name, $value)
+    public function __set(string $name, $value): void
     {
         $this->attributes[$name] = $value;
     }
 
-    public function __isset(string $name)
+    public function __isset(string $name): bool
     {
         return array_key_exists($name, $this->attributes);
     }

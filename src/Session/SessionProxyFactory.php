@@ -14,7 +14,7 @@ class SessionProxyFactory
 {
     use SingletonPatternTrait;
 
-    /** @var BuilderFactory */
+    /** @var BuilderFactory|null */
     private static $builderFactory;
 
     /**

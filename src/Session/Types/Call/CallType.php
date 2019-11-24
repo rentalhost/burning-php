@@ -41,8 +41,10 @@ class CallType
         $callFlow         = new CallFlow;
         $callFlow->starts = microtime(true);
 
-        /** @var CallReference $callReference */
-        $callReference              = $this->functions[$functionName];
+        $callReference = $this->functions[$functionName];
+
+        assert($callReference instanceof CallReference);
+
         $callReference->callFlows[] = $callFlow;
     }
 }
