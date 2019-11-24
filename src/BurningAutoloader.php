@@ -60,21 +60,23 @@ class BurningAutoloader
             }
         }
 
-        $hashFile          = $burningControlDirectory . '/HASH';
-        $configurationHash = json_encode($burningConfiguration->getHash());
+        $burningHeaderFile     = $burningControlDirectory . '/HEADER';
+        $burningHeaderContents = sprintf('BURNING v%u c<%s>',
+            $burningConfiguration->getBurningVersionInt(),
+            $burningConfiguration->getHash());
 
         if ($burningConfiguration->disableCache) {
             self::clearCache($burningCacheDirectory, $workingDirPerms);
         }
-        else if (is_file($hashFile)) {
-            $hashValue = file_get_contents($hashFile);
+        else if (is_file($burningHeaderFile)) {
+            $burningHeaderContentsPrevious = file_get_contents($burningHeaderFile);
 
-            if ($hashValue !== $configurationHash) {
+            if ($burningHeaderContentsPrevious !== $burningHeaderContents) {
                 self::clearCache($burningCacheDirectory, $workingDirPerms);
             }
         }
 
-        file_put_contents($hashFile, $configurationHash);
+        file_put_contents($burningHeaderFile, $burningHeaderContents);
     }
 
     public function register(): void

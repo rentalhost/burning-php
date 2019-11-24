@@ -31,9 +31,6 @@ class BurningConfiguration
     public $currentWorkingDir;
 
     /** @var array */
-    private $hash;
-
-    /** @var array */
     private $targetComposer = [];
 
     public function __construct()
@@ -52,15 +49,13 @@ class BurningConfiguration
         $targetComposerFile = $this->currentWorkingDir . '/composer.json';
 
         if (is_readable($targetComposerFile)) {
-            $this->targetComposer = json_decode(file_get_contents($targetComposerFile), true) ?: [];
+            $this->targetComposer = json_decode(file_get_contents($targetComposerFile), true, 512, JSON_THROW_ON_ERROR) ?: [];
         }
 
         if ($this->burningVersion === null) {
-            $selfComposer         = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true);
+            $selfComposer         = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true, 512, JSON_THROW_ON_ERROR);
             $this->burningVersion = $selfComposer['version'];
         }
-
-        $this->hash = hash('sha256', json_encode($this->attributes));
     }
 
     public function getBurningDirectory(): string
@@ -75,12 +70,9 @@ class BurningConfiguration
         return $majorVersion * 10000 + $minorVersion * 100 + $patchVersion;
     }
 
-    public function getHash(): array
+    public function getHash(): string
     {
-        return [
-            'version' => $this->getBurningVersionInt(),
-            'hash'    => $this->hash
-        ];
+        return substr(hash('sha256', serialize($this->attributes)), 0, 8);
     }
 
     /**
