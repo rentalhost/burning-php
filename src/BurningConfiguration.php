@@ -16,7 +16,6 @@ use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
  * @property bool        $disableCache
  * @property bool        $disableXdebug
  * @property bool        $ignoreDevelopmentPaths
- * @property bool        $forceWriteShutdownObject
  * @property string      $sessionProxyFactoryFunction
  */
 class BurningConfiguration
