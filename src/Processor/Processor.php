@@ -17,6 +17,12 @@ class Processor
 {
     use SingletonPatternTrait;
 
+    /** @var ProcessorFile[] */
+    private $files = [];
+
+    /** @var resource */
+    private $headerResource;
+
     /** @var Parser */
     private $parser;
 
@@ -25,19 +31,29 @@ class Processor
         $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7, new Lexer([
             'usedAttributes' => [ 'startFilePos', 'endFilePos' ]
         ]));
+
+        $this->headerResource = fopen(BurningConfiguration::getInstance()->getBurningDirectory() . '/FILES', 'wb');
     }
 
-    public function process(string $file): string
+    public function process(string $filepath): string
     {
         $burningConfiguration = BurningConfiguration::getInstance();
 
-        $fileHash   = preg_replace('/\..+$/', null, basename($file)) . '_' . hash('sha256', $file);
+        $processorFile = new ProcessorFile($filepath);
+
+        $this->files[] = $processorFile;
+
+        fwrite($this->headerResource, sprintf("h<%s> p<%s>\n",
+            $processorFile->hash,
+            $processorFile->getShortPath()));
+
+        $fileHash   = $processorFile->hash . '_' . $processorFile->getBasename();
         $fileCached = $burningConfiguration->getBurningDirectory() . '/caches/' . $fileHash . '.php';
 
-        $fileStatements = $this->parser->parse(file_get_contents($file));
+        $fileStatements = $this->parser->parse(file_get_contents($filepath));
 
         $traverser = new NodeTraverser;
-        $traverser->addVisitor(new GeneralNodeVisitor($file));
+        $traverser->addVisitor(new GeneralNodeVisitor($filepath));
 
         $modifiedFileStatements = $traverser->traverse($fileStatements);
 
