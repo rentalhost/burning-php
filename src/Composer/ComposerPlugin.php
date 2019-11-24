@@ -44,7 +44,7 @@ class ComposerPlugin
             rename($composerAutoload, $composerAutoloadReal);
 
             $composerAutoloadStub = strtr(
-                file_get_contents(__DIR__ . '/../../stub/autoload.php.stub'),
+                file_get_contents(__DIR__ . '/../../stub/autoload.php'),
                 [
                     '$composerAutoloadReal'      => realpath($composerAutoloadReal),
                     '$composerAutoloadClassname' => $composerAutoloadClassnameMatch[1]
