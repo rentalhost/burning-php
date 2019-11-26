@@ -7,15 +7,14 @@
     "burningDirectory": ".burning",
 
     /**
-     * Burning output session format, that will be stored at sessions folder inside Burning control directory.
+     * Burning output session folder format, that will be stored at Burning control directory.
      *
      * Placeholders:
      * - {%requestMs}  will be replaced by the request time microseconds.
-     * - {%headerType} will be replaced by each of Burning header types.
      *
      * @type {string}
      */
-    "burningSessionFormat": ".sess{%requestMs}.{%headerType}.burning-session",
+    "burningSessionFolderFormat": "session-{%requestMs}",
 
     /**
      * Burning version. If null it will be identified automatically based on package version.

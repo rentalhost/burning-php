@@ -10,7 +10,7 @@ use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 /**
  * @property string      $burningDirectory
- * @property string      $burningSessionFormat
+ * @property string      $burningSessionFolderFormat
  * @property string|null $burningVersion
  * @property bool        $devOnly
  * @property bool        $disableCache
@@ -61,6 +61,13 @@ class BurningConfiguration
         return $this->currentWorkingDir . DIRECTORY_SEPARATOR . $this->burningDirectory;
     }
 
+    public function getBurningSessionFolder(): string
+    {
+        return strtr($this->burningSessionFolderFormat, [
+            '{%requestMs}' => str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0')
+        ]);
+    }
+
     public function getBurningVersionInt(): int
     {
         [ $majorVersion, $minorVersion, $patchVersion ] = explode('.', $this->burningVersion);
@@ -75,10 +82,7 @@ class BurningConfiguration
 
     public function getPathWithSessionMask(string $headerType): string
     {
-        return strtr($this->burningSessionFormat, [
-            '{%requestMs}'  => str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0'),
-            '{%headerType}' => $headerType
-        ]);
+        return $this->getBurningSessionFolder() . '/' . $headerType;
     }
 
     /**

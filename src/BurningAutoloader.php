@@ -46,7 +46,11 @@ class BurningAutoloader
         $burningControlDirectory = $burningConfiguration->getBurningDirectory();
         $burningCacheDirectory   = $burningControlDirectory . '/caches';
 
-        $burningDirectories = [ $burningControlDirectory, $burningCacheDirectory ];
+        $burningDirectories = [
+            $burningControlDirectory,
+            $burningCacheDirectory,
+            $burningControlDirectory . '/' . $burningConfiguration->getBurningSessionFolder()
+        ];
 
         $workingDirPerms = fileperms($burningConfiguration->currentWorkingDir);
 
