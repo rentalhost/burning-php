@@ -105,7 +105,17 @@ class ProcessorCall
                         if ($variableItemsUniqueInline) {
                             $processorStrings = ProcessorStrings::getInstance();
 
-                            $variableArguments = array_merge($variableArguments, array_map([ $processorStrings, 'getStringIndex' ], $variableItemsUnique));
+                            if (count(array_filter($variableItemsUnique, 'ctype_digit')) === $variableItemsUniqueCount) {
+                                $variableArguments[] = self::STRING_COMPOSITION_INTEGER;
+                                $variableArguments   = array_merge($variableArguments, $variableItemsUnique);
+                            }
+                            else if (count(array_filter($variableItemsUnique, [ self::class, 'isFloatString' ])) === $variableItemsUniqueCount) {
+                                $variableArguments[] = self::STRING_COMPOSITION_FLOAT;
+                                $variableArguments   = array_merge($variableArguments, $variableItemsUnique);
+                            }
+                            else {
+                                $variableArguments = array_merge($variableArguments, array_map([ $processorStrings, 'getStringIndex' ], $variableItemsUnique));
+                            }
                         }
                         else {
                             $variableTypeStringComposition = self::getStringComposition(self::getArrayFirstElement($variable));
@@ -288,10 +298,20 @@ class ProcessorCall
             return self::STRING_COMPOSITION_INTEGER;
         }
 
-        if ((string) (float) $value === $value) {
+        if (self::isFloatString($value)) {
             return self::STRING_COMPOSITION_FLOAT;
         }
 
         return self::STRING_COMPOSITION_GENERIC;
+    }
+
+    private static function isEmptyString(string $value): bool
+    {
+        return !$value && $value !== '0';
+    }
+
+    private static function isFloatString(string $value): bool
+    {
+        return (string) (float) $value === $value;
     }
 }
