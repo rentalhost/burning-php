@@ -97,6 +97,11 @@ class ProcessorNodeVisitor
             }
         }
 
+        if ($node instanceof Node\Stmt\Catch_) {
+            $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $node->var);
+            array_unshift($node->stmts, ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $node->var));
+        }
+
         return parent::leaveNode($node);
     }
 }
