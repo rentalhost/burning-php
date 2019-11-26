@@ -34,72 +34,46 @@ class ProcessorNodeVisitor
 
     public function leaveNode(Node $node)
     {
-        if ($node instanceof Node\Stmt\If_ ||
-            $node instanceof Node\Stmt\Else_ ||
-            $node instanceof Node\Stmt\ElseIf_ ||
-            $node instanceof Node\Stmt\Foreach_ ||
-            $node instanceof Node\Stmt\For_ ||
-            $node instanceof Node\Stmt\Do_ ||
-            $node instanceof Node\Stmt\While_ ||
-            $node instanceof Node\Stmt\Case_ ||
-            $node instanceof Node\Stmt\ClassMethod ||
-            $node instanceof Node\Expr\Closure ||
-            $node instanceof Node\Stmt\Function_ ||
-            $node instanceof Node\Stmt\TryCatch ||
-            $node instanceof Node\Stmt\Catch_ ||
-            $node instanceof Node\Stmt\Finally_) {
-            if ($node->stmts) {
-                $nodeStmts = [];
+        if ($node instanceof Node\Stmt\ClassMethod && $node->stmts) {
+            $variables = new VariablesBag;
+            $nodeStmts = [];
 
-                foreach ($node->stmts as $stmt) {
-                    if ($stmt instanceof Node\Stmt\Expression) {
-                        $stmtExpr = $stmt->expr;
-
-                        if ($stmtExpr instanceof Node\Expr\Assign &&
-                            $stmtExpr->var instanceof Node\Expr\Variable) {
-                            $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $stmtExpr->var);
-
-                            $nodeStmts[] = ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $stmt->expr);
-
-                            continue;
-                        }
-                    }
-
-                    $nodeStmts[] = $stmt;
-                }
-
-                $node->stmts = $nodeStmts;
-            }
-        }
-
-        if ($node instanceof Node\Stmt\Foreach_) {
-            if ($node->valueVar instanceof Node\Expr\Variable) {
-                $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $node->valueVar);
-                array_unshift($node->stmts, ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $node->valueVar));
-            }
-
-            if ($node->keyVar) {
-                $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $node->keyVar);
-                array_unshift($node->stmts, ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $node->keyVar));
-            }
-        }
-
-        if ($node instanceof Node\Stmt\ClassMethod ||
-            $node instanceof Node\Stmt\Function_ ||
-            $node instanceof Node\Expr\Closure) {
-            if ($node->params && $node->stmts) {
+            if ($node->params) {
                 foreach ($node->params as $nodeParam) {
                     assert($nodeParam instanceof Node\Param);
 
-                    $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $nodeParam->var);
-                    array_unshift($node->stmts, ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $nodeParam->var));
+                    $variables->registerVariable($nodeParam->var->name, ExprVariableStatementWriter::writeStatement($this->processorFile, $nodeParam->var));
                 }
             }
-        }
 
-        if ($node instanceof Node\Stmt\Catch_) {
-            $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $node->var);
-            array_unshift($node->stmts, ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $node->var));
+            foreach ($node->stmts as $nodeStmt) {
+                if ($nodeStmt instanceof Node\Stmt\Expression &&
+                    $nodeStmt->expr instanceof Node\Expr\Assign &&
+                    $nodeStmt->expr->var instanceof Node\Expr\Variable) {
+                    $statementIndex = $variables->getVariable($nodeStmt->expr->var->name) ??
+                                      $variables->registerVariable($nodeStmt->expr->var->name,
+                                          ExprVariableStatementWriter::writeStatement($this->processorFile, $nodeStmt->expr->var));
+
+                    $nodeStmts[] = [
+                        $nodeStmt,
+                        ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $nodeStmt->expr->var)
+                    ];
+
+                    continue;
+                }
+
+                $nodeStmts[] = [ $nodeStmt ];
+            }
+
+            $node->stmts = array_merge(... $nodeStmts);
+
+            if ($node->params) {
+                foreach ($node->params as $nodeParam) {
+                    assert($nodeParam instanceof Node\Param);
+
+                    array_unshift($node->stmts, ProcessorCallFactory::createMethodCall('annotateType', $variables[$nodeParam->var->name], $nodeParam->var));
+                }
+            }
         }
 
         return parent::leaveNode($node);
