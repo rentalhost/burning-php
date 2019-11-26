@@ -112,7 +112,6 @@ class ProcessorFile
     public function increaseAnnotationTypeOccurrences(int $statementIndex, string $variableType, array $variableArguments): void
     {
         $processorString = Processor::stringifyArguments(array_merge([
-            $this->index,
             $statementIndex,
             '%u',
             $variableType,
