@@ -34,22 +34,37 @@ class ProcessorNodeVisitor
 
     public function leaveNode(Node $node)
     {
-        if ($node instanceof Node\Stmt\ClassMethod && $node->stmts) {
-            $nodeStmts = [];
+        if ($node instanceof Node\Stmt\If_ ||
+            $node instanceof Node\Stmt\Else_ ||
+            $node instanceof Node\Stmt\ElseIf_ ||
+            $node instanceof Node\Stmt\Foreach_ ||
+            $node instanceof Node\Stmt\For_ ||
+            $node instanceof Node\Stmt\Do_ ||
+            $node instanceof Node\Stmt\While_ ||
+            $node instanceof Node\Stmt\Case_ ||
+            $node instanceof Node\Stmt\ClassMethod ||
+            $node instanceof Node\Expr\Closure ||
+            $node instanceof Node\Stmt\Function_ ||
+            $node instanceof Node\Stmt\TryCatch ||
+            $node instanceof Node\Stmt\Catch_ ||
+            $node instanceof Node\Stmt\Finally_) {
+            if ($node->stmts) {
+                $nodeStmts = [];
 
-            foreach ($node->stmts as $stmt) {
-                if ($stmt instanceof Node\Stmt\Expression && $stmt->expr instanceof Node\Expr\Assign) {
-                    $statementIndex = ExprAssignStatementWriter::writeStatement($this->processorFile, $stmt->expr);
+                foreach ($node->stmts as $stmt) {
+                    if ($stmt instanceof Node\Stmt\Expression && $stmt->expr instanceof Node\Expr\Assign) {
+                        $statementIndex = ExprAssignStatementWriter::writeStatement($this->processorFile, $stmt->expr);
 
-                    $nodeStmts[] = ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $stmt);
+                        $nodeStmts[] = ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $stmt);
 
-                    continue;
+                        continue;
+                    }
+
+                    $nodeStmts[] = $stmt;
                 }
 
-                $nodeStmts[] = $stmt;
+                $node->stmts = $nodeStmts;
             }
-
-            $node->stmts = $nodeStmts;
         }
 
         return parent::leaveNode($node);
