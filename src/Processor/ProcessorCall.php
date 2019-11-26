@@ -32,6 +32,9 @@ class ProcessorCall
 
         OBJECT_TYPE_ANONYMOUS = 'a';
 
+    /** @var int[] */
+    private static $annotationsTypesOccurrences = [];
+
     /** @var resource|null */
     private $callsResource;
 
@@ -39,7 +42,7 @@ class ProcessorCall
      * @param mixed $variable
      * @return mixed
      */
-    public static function annotateType(string $file, int $statementIndex, $variable)
+    public static function annotateType(string $filePath, int $statementIndex, $variable)
     {
         switch (gettype($variable)) {
             case 'string':
@@ -119,7 +122,7 @@ class ProcessorCall
                 $variableArguments = [];
         }
 
-        self::getInstance()->writeCall(Processor::getInstance()->getFile($file)->index, $statementIndex, $variableType, ... $variableArguments);
+        self::increaseAnnotationTypeOccurrences($filePath, $statementIndex, $variableType, $variableArguments);
 
         return $variable;
     }
@@ -127,6 +130,17 @@ class ProcessorCall
     public static function register(): void
     {
         class_alias(static::class, 'BurningCall');
+
+        register_shutdown_function([ static::class, 'writeAnnotationsTypesOccurrences' ]);
+    }
+
+    public static function writeAnnotationsTypesOccurrences(): void
+    {
+        $processorCall = self::getInstance();
+
+        foreach (self::$annotationsTypesOccurrences as $occurrenceFormat => $occurrenceCount) {
+            $processorCall->writeCallRaw(strtr($occurrenceFormat, [ '%u' => $occurrenceCount ]));
+        }
     }
 
     private static function getArrayComposition(array $variableItems): string
@@ -259,6 +273,24 @@ class ProcessorCall
         return self::STRING_COMPOSITION_GENERIC;
     }
 
+    private static function increaseAnnotationTypeOccurrences(string $filePath, int $statementIndex, string $variableType, array $variableArguments): void
+    {
+        $processorString = Processor::stringifyArguments(array_merge([
+            Processor::getInstance()->getFile($filePath)->index,
+            $statementIndex,
+            '%u',
+            $variableType,
+        ], $variableArguments), false);
+
+        if (!array_key_exists($processorString, self::$annotationsTypesOccurrences)) {
+            self::$annotationsTypesOccurrences[$processorString] = 1;
+
+            return;
+        }
+
+        self::$annotationsTypesOccurrences[$processorString]++;
+    }
+
     public function initialize(): void
     {
         $burningConfiguration = BurningConfiguration::getInstance();
@@ -267,8 +299,13 @@ class ProcessorCall
                                      $burningConfiguration->getPathWithSessionMask('CALLS'), 'wb');
     }
 
-    private function writeCall(int $fileIndex, int $statementIndex, ...$arguments): void
+    public function writeCall(int $fileIndex, int $statementIndex, ...$arguments): void
     {
-        fwrite($this->callsResource, $fileIndex . ' ' . $statementIndex . Processor::stringifyArguments($arguments) . "\n");
+        $this->writeCallRaw($fileIndex . ' ' . $statementIndex . Processor::stringifyArguments($arguments));
+    }
+
+    public function writeCallRaw(string $content): void
+    {
+        fwrite($this->callsResource, $content . "\n");
     }
 }
