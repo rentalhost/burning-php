@@ -101,7 +101,6 @@ class ProcessorCall
                         if ($variableItemsUniqueCount <= 8) {
                             $processorStrings = ProcessorStrings::getInstance();
 
-                            $variableArguments[] = self::STRING_COMPOSITION_GENERIC;
                             $variableArguments   = array_merge($variableArguments, array_map([ $processorStrings, 'getStringIndex' ], $variableItemsUnique));
                         }
                         else {
