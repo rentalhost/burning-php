@@ -55,7 +55,7 @@ class ProcessorCall
                     $variableArguments = [ $variableTypeStringLength ];
 
                     if ($variableTypeStringLength <= 255) {
-                        $variableArguments[] = $variable;
+                        $variableArguments[] = ProcessorStrings::getInstance()->getStringIndex($variable);
                     }
                 }
                 break;
@@ -99,8 +99,10 @@ class ProcessorCall
                         $variableItemsUniqueCount = count($variableItemsUnique);
 
                         if ($variableItemsUniqueCount <= 8) {
+                            $processorStrings = ProcessorStrings::getInstance();
+
                             $variableArguments[] = self::STRING_COMPOSITION_GENERIC;
-                            $variableArguments   = array_merge($variableArguments, $variableItemsUnique);
+                            $variableArguments   = array_merge($variableArguments, array_map([ $processorStrings, 'getStringIndex' ], $variableItemsUnique));
                         }
                         else {
                             $variableTypeStringComposition = self::getStringComposition(self::getArrayFirstElement($variable));

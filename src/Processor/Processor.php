@@ -50,14 +50,21 @@ class Processor
 
         foreach ($arguments as &$argument) {
             if (is_string($argument)) {
-                if (!$argument ||
-                    strpos($argument, ' ') !== false) {
-                    $argument = '<' . addcslashes($argument, '>') . '>';
-                }
+                $argument = self::stringifyString($argument);
             }
         }
 
         return ($addPrefixSpace !== false ? ' ' : null) . implode(' ', $arguments);
+    }
+
+    public static function stringifyString(string $string): string
+    {
+        if (!$string ||
+            strpos($string, ' ') !== false) {
+            return '<' . addcslashes($string, '>') . '>';
+        }
+
+        return $string;
     }
 
     public function getFile(string $path): ProcessorFile
