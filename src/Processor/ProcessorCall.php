@@ -95,15 +95,33 @@ class ProcessorCall
                         $variableArguments[] = count($variable) - $variableTypeBooleanTrue;
                     }
                     else if ($variableTypeArrayComposition === self::ARRAY_COMPOSITION_STRING) {
-                        $variableTypeStringComposition = self::getStringComposition(self::getArrayFirstElement($variable));
+                        $variableItemsUnique      = array_unique($variable);
+                        $variableItemsUniqueCount = count($variableItemsUnique);
 
-                        foreach ($variable as $variableItem) {
-                            if (self::getStringComposition($variableItem) !== $variableTypeStringComposition) {
-                                $variableTypeStringComposition = self::STRING_COMPOSITION_GENERIC;
-                            }
+                        if ($variableItemsUniqueCount <= 8) {
+                            $variableArguments[] = self::STRING_COMPOSITION_GENERIC;
+                            $variableArguments   = array_merge($variableArguments, $variableItemsUnique);
                         }
+                        else {
+                            $variableTypeStringComposition = self::getStringComposition(self::getArrayFirstElement($variable));
 
-                        $variableArguments[] = $variableTypeStringComposition;
+                            foreach ($variable as $variableItem) {
+                                if (self::getStringComposition($variableItem) !== $variableTypeStringComposition) {
+                                    $variableTypeStringComposition = self::STRING_COMPOSITION_GENERIC;
+                                }
+                            }
+
+                            $variableArguments[] = $variableTypeStringComposition;
+                        }
+                    }
+                    else if ($variableTypeArrayComposition === self::ARRAY_COMPOSITION_INTEGER ||
+                             $variableTypeArrayComposition === self::ARRAY_COMPOSITION_FLOAT) {
+                        $variableItemsUnique      = array_unique($variable);
+                        $variableItemsUniqueCount = count($variableItemsUnique);
+
+                        if ($variableItemsUniqueCount <= 8) {
+                            $variableArguments = array_merge($variableArguments, $variableItemsUnique);
+                        }
                     }
                     else if ($variableTypeArrayComposition === self::ARRAY_COMPOSITION_OBJECT) {
                         $variableFirstElement = self::getArrayFirstElement($variable);
