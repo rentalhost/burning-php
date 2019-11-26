@@ -55,7 +55,7 @@ class ProcessorNodeVisitor
                     if ($stmt instanceof Node\Stmt\Expression && $stmt->expr instanceof Node\Expr\Assign) {
                         $statementIndex = ExprAssignStatementWriter::writeStatement($this->processorFile, $stmt->expr);
 
-                        $nodeStmts[] = ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $stmt);
+                        $nodeStmts[] = ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $stmt->expr);
 
                         continue;
                     }

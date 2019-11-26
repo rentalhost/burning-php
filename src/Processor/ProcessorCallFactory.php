@@ -12,7 +12,7 @@ class ProcessorCallFactory
     /** @var BuilderFactory|null */
     private static $builderFactory;
 
-    public static function createMethodCall(string $method, int $statementIndex, Node\Stmt\Expression $expression): Node\Stmt\Expression
+    public static function createMethodCall(string $method, int $statementIndex, Node\Expr $expression): Node\Stmt\Expression
     {
         return new Node\Stmt\Expression(new Node\Expr\StaticCall(
             new Node\Name\FullyQualified('BurningCall'),
@@ -20,7 +20,7 @@ class ProcessorCallFactory
             [
                 new Node\Scalar\MagicConst\File,
                 self::getBuilderFactory()->val($statementIndex),
-                $expression->expr
+                $expression
             ]
         ));
     }
