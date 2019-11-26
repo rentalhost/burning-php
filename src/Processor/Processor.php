@@ -49,8 +49,11 @@ class Processor
         }
 
         foreach ($arguments as &$argument) {
-            if (is_string($argument) && strpos($argument, ' ') !== false) {
-                $argument = '<' . addcslashes($argument, '>') . '>';
+            if (is_string($argument)) {
+                if (!$argument ||
+                    strpos($argument, ' ') !== false) {
+                    $argument = '<' . addcslashes($argument, '>') . '>';
+                }
             }
         }
 
