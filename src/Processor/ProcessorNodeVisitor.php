@@ -84,6 +84,19 @@ class ProcessorNodeVisitor
             }
         }
 
+        if ($node instanceof Node\Stmt\ClassMethod ||
+            $node instanceof Node\Stmt\Function_ ||
+            $node instanceof Node\Expr\Closure) {
+            if ($node->params && $node->stmts) {
+                foreach ($node->params as $nodeParam) {
+                    assert($nodeParam instanceof Node\Param);
+
+                    $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $nodeParam->var);
+                    array_unshift($node->stmts, ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $nodeParam->var));
+                }
+            }
+        }
+
         return parent::leaveNode($node);
     }
 }
