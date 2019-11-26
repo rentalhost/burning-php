@@ -39,19 +39,17 @@ class ProcessorCall
      */
     public static function annotateType(string $file, int $statementIndex, $variable)
     {
-        $processorFile = Processor::getInstance()->getFile($file);
-
-        $variablePhpType   = gettype($variable);
-        $variableArguments = null;
-
-        switch ($variablePhpType) {
+        switch (gettype($variable)) {
             case 'string':
                 $variableType      = 's';
                 $variableArguments = [ strlen($variable), self::getStringComposition($variable) ];
                 break;
             case 'NULL':
+                $variableType      = 'N';
+                $variableArguments = [];
+                break;
             case 'integer':
-                $variableType      = $variablePhpType[0];
+                $variableType      = 'i';
                 $variableArguments = [ $variable ];
                 break;
             case 'float':
@@ -109,11 +107,11 @@ class ProcessorCall
                 $variableArguments = [ get_resource_type($variable) ];
                 break;
             default:
-                $variableType      = $variablePhpType;
+                $variableType      = gettype($variable) . '?';
                 $variableArguments = [];
         }
 
-        self::getInstance()->writeCall($processorFile->index, $statementIndex, $variableType, ... $variableArguments);
+        self::getInstance()->writeCall(Processor::getInstance()->getFile($file)->index, $statementIndex, $variableType, ... $variableArguments);
 
         return $variable;
     }
