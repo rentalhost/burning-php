@@ -27,6 +27,9 @@ class ProcessorFile
     /** @var string */
     public $phpResourcePath;
 
+    /** @var string */
+    public $sessionStatementResourcePath;
+
     /** @var resource */
     public $sourceResource;
 
@@ -34,10 +37,10 @@ class ProcessorFile
     public $sourceResourcePath;
 
     /** @var resource */
-    public $statementsResource;
+    public $sourceStatementsResource;
 
     /** @var string */
-    public $statementsResourcePath;
+    public $sourceStatementsResourcePath;
 
     /** @var int[] */
     private $annotationsTypesOccurrences = [];
@@ -58,31 +61,26 @@ class ProcessorFile
 
         $resourcesPath = str_replace('/', DIRECTORY_SEPARATOR, $burningConfiguration->getBurningDirectory() . '/caches/' . $this->hashFile);
 
-        $this->callsResourcePath      = $burningConfiguration->getBurningDirectory() . '/' .
-                                        $burningConfiguration->getPathWithSessionMask($this->hash . '.CALLS');
-        $this->phpResourcePath        = $resourcesPath . '.php';
-        $this->phpResource            = fopen($this->phpResourcePath, 'wb');
-        $this->statementsResourcePath = $resourcesPath . '.php.STATEMENTS';
-        $this->statementsResource     = fopen($this->statementsResourcePath, 'w+b');
-        $this->statementsCount        = 0;
+        $this->callsResourcePath            = $burningConfiguration->getBurningDirectory() . '/' .
+                                              $burningConfiguration->getPathWithSessionMask($this->hash . '.CALLS');
+        $this->phpResourcePath              = $resourcesPath . '.php';
+        $this->phpResource                  = fopen($this->phpResourcePath, 'wb');
+        $this->sessionStatementResourcePath = $burningConfiguration->getBurningDirectory() . '/' .
+                                              $burningConfiguration->getPathWithSessionMask($this->hash . '.STATEMENTS');
+        $this->sourceStatementsResourcePath = $resourcesPath . '.php.STATEMENTS';
+        $this->sourceStatementsResource     = fopen($this->sourceStatementsResourcePath, 'w+b');
+        $this->statementsCount              = 0;
     }
 
     public function __destruct()
     {
         $this->writeAnnotationsTypesOccurrences();
+        $this->copySourceStatementsToSession();
     }
 
-    public function appendStatementsToResource($statementsResource): void
+    public function copySourceStatementsToSession(): void
     {
-        if (!fstat($this->statementsResource)['size']) {
-            return;
-        }
-
-        fseek($this->statementsResource, 0);
-
-        while (($resourceBuffer = fgets($this->statementsResource)) !== false) {
-            fwrite($statementsResource, $this->index . ' ' . $resourceBuffer);
-        }
+        copy($this->sourceStatementsResourcePath, $this->sessionStatementResourcePath);
     }
 
     public function getBasename(): string
@@ -156,7 +154,7 @@ class ProcessorFile
 
     public function writeStatement(int $statementType, ...$statementArguments): int
     {
-        fwrite($this->statementsResource, $statementType . Processor::stringifyArguments($statementArguments) . "\n");
+        fwrite($this->sourceStatementsResource, $statementType . Processor::stringifyArguments($statementArguments) . "\n");
 
         return $this->statementsCount++;
     }

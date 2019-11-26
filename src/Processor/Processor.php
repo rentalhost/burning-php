@@ -25,9 +25,6 @@ class Processor
     /** @var Parser */
     private $parser;
 
-    /** @var resource */
-    private $statementsResource;
-
     public function __construct()
     {
         $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7, new Lexer([
@@ -36,10 +33,8 @@ class Processor
 
         $burningConfiguration = BurningConfiguration::getInstance();
 
-        $this->filesResource      = fopen($burningConfiguration->getBurningDirectory() . '/' .
-                                          $burningConfiguration->getPathWithSessionMask('FILES'), 'wb');
-        $this->statementsResource = fopen($burningConfiguration->getBurningDirectory() . '/' .
-                                          $burningConfiguration->getPathWithSessionMask('STATEMENTS'), 'wb');
+        $this->filesResource = fopen($burningConfiguration->getBurningDirectory() . '/' .
+                                     $burningConfiguration->getPathWithSessionMask('FILES'), 'wb');
     }
 
     public static function stringifyArguments(array $arguments, ?bool $addPrefixSpace = null): ?string
@@ -88,7 +83,6 @@ class Processor
         $modifiedFileStatements = $traverser->traverse($fileStatements);
 
         $processorFile->writeSource((new PrettyPrinter)->prettyPrintFile($modifiedFileStatements));
-        $processorFile->appendStatementsToResource($this->statementsResource);
 
         return $processorFile;
     }
