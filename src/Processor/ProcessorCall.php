@@ -105,7 +105,10 @@ class ProcessorCall
                         if ($variableItemsUniqueInline) {
                             $processorStrings = ProcessorStrings::getInstance();
 
-                            if (count(array_filter($variableItemsUnique, 'ctype_digit')) === $variableItemsUniqueCount) {
+                            if (count(array_filter($variableItemsUnique, [ self::class, 'isEmptyString' ])) === $variableItemsUniqueCount) {
+                                $variableArguments[] = self::STRING_COMPOSITION_EMPTY;
+                            }
+                            else if (count(array_filter($variableItemsUnique, 'ctype_digit')) === $variableItemsUniqueCount) {
                                 $variableArguments[] = self::STRING_COMPOSITION_INTEGER;
                                 $variableArguments   = array_merge($variableArguments, $variableItemsUnique);
                             }
