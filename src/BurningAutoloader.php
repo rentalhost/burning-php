@@ -6,9 +6,7 @@ namespace Rentalhost\BurningPHP;
 
 use Composer\Autoload\ClassLoader;
 use Rentalhost\BurningPHP\Processor\Processor;
-use Rentalhost\BurningPHP\Session\SessionProxyFactory;
-use Rentalhost\BurningPHP\Session\Types\Initialize\InitializeType;
-use Rentalhost\BurningPHP\Session\Types\Path\PathType;
+use Rentalhost\BurningPHP\Processor\ProcessorCall;
 use Rentalhost\BurningPHP\Support\Deterministic;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 use Symfony\Component\Filesystem\Filesystem;
@@ -37,6 +35,8 @@ class BurningAutoloader
         $filesystem = new Filesystem;
         $filesystem->remove($burningCacheDirectory);
 
+        clearstatcache(true, $burningCacheDirectory);
+
         mkdir($burningCacheDirectory, $workingDirPerms);
     }
 
@@ -46,11 +46,7 @@ class BurningAutoloader
         $burningControlDirectory = $burningConfiguration->getBurningDirectory();
         $burningCacheDirectory   = $burningControlDirectory . '/caches';
 
-        $burningDirectories = [
-            $burningControlDirectory,
-            $burningControlDirectory . '/sessions',
-            $burningCacheDirectory
-        ];
+        $burningDirectories = [ $burningControlDirectory, $burningCacheDirectory ];
 
         $workingDirPerms = fileperms($burningConfiguration->currentWorkingDir);
 
@@ -60,8 +56,9 @@ class BurningAutoloader
             }
         }
 
-        $burningHeaderFile     = $burningControlDirectory . '/HEADER';
-        $burningHeaderContents = sprintf('BURNING v%u c<%s>',
+        $burningHeaderFile     = $burningControlDirectory . '/' .
+                                 $burningConfiguration->getPathWithSessionMask('HEADER');
+        $burningHeaderContents = sprintf("BURNING v%u c%s\n",
             $burningConfiguration->getBurningVersionInt(),
             $burningConfiguration->getHash());
 
@@ -83,8 +80,7 @@ class BurningAutoloader
     {
         self::generateControlDirectory();
 
-        SessionProxyFactory::register();
-        InitializeType::execute();
+        ProcessorCall::register();
 
         spl_autoload_register([ $this, 'autoload' ], true, true);
     }
@@ -109,11 +105,9 @@ class BurningAutoloader
             }
         }
 
-        includeFile(Processor::getInstance()->process($file));
+        $processorFile = Processor::getInstance()->process($file);
 
-        $burningWorkingLength = strlen(BurningConfiguration::getInstance()->currentWorkingDir);
-
-        PathType::getInstance()->registerClass(substr($file, $burningWorkingLength + 1), $classname);
+        includeFile($processorFile->phpResourcePath);
 
         return true;
     }

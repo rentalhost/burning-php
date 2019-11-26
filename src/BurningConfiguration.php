@@ -16,7 +16,6 @@ use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
  * @property bool        $disableCache
  * @property bool        $disableXdebug
  * @property bool        $ignoreDevelopmentPaths
- * @property string      $sessionProxyFactoryFunction
  */
 class BurningConfiguration
 {
@@ -71,7 +70,15 @@ class BurningConfiguration
 
     public function getHash(): string
     {
-        return substr(hash('sha256', serialize($this->attributes)), 0, 8);
+        return strtoupper(substr(hash('sha256', serialize($this->attributes)), 0, 8));
+    }
+
+    public function getPathWithSessionMask(string $headerType): string
+    {
+        return strtr($this->burningSessionFormat, [
+            '{%requestMs}'  => str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0'),
+            '{%headerType}' => $headerType
+        ]);
     }
 
     /**

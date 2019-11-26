@@ -10,11 +10,12 @@
      * Burning output session format, that will be stored at sessions folder inside Burning control directory.
      *
      * Placeholders:
-     * - {%requestMs} will be replaced by the request time microseconds.
+     * - {%requestMs}  will be replaced by the request time microseconds.
+     * - {%headerType} will be replaced by each of Burning header types.
      *
      * @type {string}
      */
-    "burningSessionFormat": ".sess{%requestMs}.burning-session",
+    "burningSessionFormat": ".sess{%requestMs}.{%headerType}.burning-session",
 
     /**
      * Burning version. If null it will be identified automatically based on package version.
@@ -54,12 +55,5 @@
      *
      * @type {boolean}
      */
-    "ignoreDevelopmentPaths": true,
-
-    /**
-     * Set the function name that is generated to be used to access the SessionProxyFactory unique instance from a script rewritten by Burning.
-     *
-     * @type {string}
-     */
-    "sessionProxyFactoryFunction": "_bspf"
+    "ignoreDevelopmentPaths": true
 }

@@ -10,7 +10,6 @@ use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard as PrettyPrinter;
 use Rentalhost\BurningPHP\BurningConfiguration;
-use Rentalhost\BurningPHP\Processor\NodeVisitors\GeneralNodeVisitor;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 class Processor
@@ -21,10 +20,13 @@ class Processor
     private $files = [];
 
     /** @var resource */
-    private $headerResource;
+    private $filesResource;
 
     /** @var Parser */
     private $parser;
+
+    /** @var resource */
+    private $statementsResource;
 
     public function __construct()
     {
@@ -32,33 +34,52 @@ class Processor
             'usedAttributes' => [ 'startFilePos', 'endFilePos' ]
         ]));
 
-        $this->headerResource = fopen(BurningConfiguration::getInstance()->getBurningDirectory() . '/FILES', 'wb');
-    }
-
-    public function process(string $filepath): string
-    {
         $burningConfiguration = BurningConfiguration::getInstance();
 
-        $processorFile = new ProcessorFile($filepath);
+        $this->filesResource      = fopen($burningConfiguration->getBurningDirectory() . '/' .
+                                          $burningConfiguration->getPathWithSessionMask('FILES'), 'wb');
+        $this->statementsResource = fopen($burningConfiguration->getBurningDirectory() . '/' .
+                                          $burningConfiguration->getPathWithSessionMask('STATEMENTS'), 'wb');
+    }
 
-        $this->files[] = $processorFile;
+    public static function stringifyArguments(array $arguments, ?bool $addPrefixSpace = null): ?string
+    {
+        if (!$arguments) {
+            return null;
+        }
 
-        fwrite($this->headerResource, sprintf("h<%s> p<%s>\n",
-            $processorFile->hash,
-            $processorFile->getShortPath()));
+        foreach ($arguments as &$argument) {
+            if (is_string($argument) && strpos($argument, ' ') !== false) {
+                $argument = '<' . addcslashes($argument, '>') . '>';
+            }
+        }
 
-        $fileHash   = $processorFile->hash . '_' . $processorFile->getBasename();
-        $fileCached = $burningConfiguration->getBurningDirectory() . '/caches/' . $fileHash . '.php';
+        return ($addPrefixSpace !== false ? ' ' : null) . implode(' ', $arguments);
+    }
 
-        $fileStatements = $this->parser->parse(file_get_contents($filepath));
+    public function getFile(string $path): ProcessorFile
+    {
+        return $this->files[$path];
+    }
+
+    public function process(string $filePath): ProcessorFile
+    {
+        $processorFile = new ProcessorFile($filePath, count($this->files));
+
+        $this->files[$processorFile->phpResourcePath] = $processorFile;
+
+        fwrite($this->filesResource, self::stringifyArguments([ $processorFile->hash, $processorFile->getShortPath() ], false) . "\n");
+
+        $fileStatements = $this->parser->parse(file_get_contents($filePath));
 
         $traverser = new NodeTraverser;
-        $traverser->addVisitor(new GeneralNodeVisitor($filepath));
+        $traverser->addVisitor(new ProcessorNodeVisitor($processorFile));
 
         $modifiedFileStatements = $traverser->traverse($fileStatements);
 
-        file_put_contents($fileCached, (new PrettyPrinter)->prettyPrintFile($modifiedFileStatements), LOCK_EX);
+        $processorFile->writeSource((new PrettyPrinter)->prettyPrintFile($modifiedFileStatements));
+        $processorFile->appendStatementsToResource($this->statementsResource);
 
-        return $fileCached;
+        return $processorFile;
     }
 }
