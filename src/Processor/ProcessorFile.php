@@ -80,7 +80,9 @@ class ProcessorFile
 
     public function copySourceStatementsToSession(): void
     {
-        copy($this->sourceStatementsResourcePath, $this->sessionStatementResourcePath);
+        if ($this->statementsCount) {
+            copy($this->sourceStatementsResourcePath, $this->sessionStatementResourcePath);
+        }
     }
 
     public function getBasename(): string
