@@ -9,6 +9,9 @@ use Rentalhost\BurningPHP\BurningConfiguration;
 
 class ProcessorFile
 {
+    public const
+        CALL_TYPE_ANNOTATION = 0;
+
     /** @var resource */
     public $callsResource;
 
@@ -113,6 +116,7 @@ class ProcessorFile
     {
         $processorString = Processor::stringifyArguments(array_merge([
             $statementIndex,
+            self::CALL_TYPE_ANNOTATION,
             '%u',
             $variableType,
         ], $variableArguments), false);
