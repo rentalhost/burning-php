@@ -28,7 +28,9 @@ class ProcessorCall
         ARRAY_COMPOSITION_OBJECT_MIXED = 'om',
         ARRAY_COMPOSITION_NULL = 'N',
         ARRAY_COMPOSITION_RESOURCE = 'r',
-        ARRAY_COMPOSITION_RESOURCE_MIXED = 'rm';
+        ARRAY_COMPOSITION_RESOURCE_MIXED = 'rm',
+
+        OBJECT_TYPE_ANONYMOUS = 'a';
 
     /** @var resource|null */
     private $callsResource;
@@ -91,7 +93,11 @@ class ProcessorCall
                         $variableArguments[] = $variableTypeStringComposition;
                     }
                     else if ($variableTypeArrayComposition === self::ARRAY_COMPOSITION_OBJECT) {
-                        $variableArguments[] = ProcessorTypes::getInstance()->getTypeIndex(get_class(self::getArrayFirstElement($variable)));
+                        $variableFirstElement = self::getArrayFirstElement($variable);
+
+                        $variableArguments[] = (new \ReflectionClass($variableFirstElement))->isAnonymous()
+                            ? self::OBJECT_TYPE_ANONYMOUS
+                            : ProcessorTypes::getInstance()->getTypeIndex(get_class($variableFirstElement));
                     }
                     else if ($variableTypeArrayComposition === self::ARRAY_COMPOSITION_RESOURCE) {
                         $variableArguments[] = get_resource_type(self::getArrayFirstElement($variable));
@@ -100,7 +106,9 @@ class ProcessorCall
                 break;
             case 'object':
                 $variableType      = 'o';
-                $variableArguments = [ ProcessorTypes::getInstance()->getTypeIndex(get_class($variable)) ];
+                $variableArguments = (new \ReflectionClass($variable))->isAnonymous()
+                    ? [ self::OBJECT_TYPE_ANONYMOUS ]
+                    : [ ProcessorTypes::getInstance()->getTypeIndex(get_class($variable)) ];
                 break;
             case 'resource':
                 $variableType      = 'r';
