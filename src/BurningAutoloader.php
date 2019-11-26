@@ -30,29 +30,21 @@ class BurningAutoloader
         );
     }
 
-    private static function clearCache(string $burningCacheDirectory, int $workingDirPerms): void
-    {
-        $filesystem = new Filesystem;
-        $filesystem->remove($burningCacheDirectory);
-
-        clearstatcache(true, $burningCacheDirectory);
-
-        mkdir($burningCacheDirectory, $workingDirPerms);
-    }
-
     private static function generateControlDirectory(): void
     {
         $burningConfiguration    = BurningConfiguration::getInstance();
         $burningControlDirectory = $burningConfiguration->getBurningDirectory();
         $burningCacheDirectory   = $burningControlDirectory . '/caches';
+        $burningSessionDirectory = $burningControlDirectory . '/' . $burningConfiguration->getBurningSessionFolder();
 
         $burningDirectories = [
             $burningControlDirectory,
-            $burningCacheDirectory,
-            $burningControlDirectory . '/' . $burningConfiguration->getBurningSessionFolder()
+            $burningCacheDirectory
         ];
 
         $workingDirPerms = fileperms($burningConfiguration->currentWorkingDir);
+
+        self::rebuildDirectory($burningSessionDirectory, $workingDirPerms);
 
         foreach ($burningDirectories as $burningDirectory) {
             if (!is_dir($burningDirectory)) {
@@ -67,17 +59,27 @@ class BurningAutoloader
             $burningConfiguration->getHash());
 
         if ($burningConfiguration->disableCache) {
-            self::clearCache($burningCacheDirectory, $workingDirPerms);
+            self::rebuildDirectory($burningCacheDirectory, $workingDirPerms);
         }
         else if (is_file($burningHeaderFile)) {
             $burningHeaderContentsPrevious = file_get_contents($burningHeaderFile);
 
             if ($burningHeaderContentsPrevious !== $burningHeaderContents) {
-                self::clearCache($burningCacheDirectory, $workingDirPerms);
+                self::rebuildDirectory($burningCacheDirectory, $workingDirPerms);
             }
         }
 
         file_put_contents($burningHeaderFile, $burningHeaderContents);
+    }
+
+    private static function rebuildDirectory(string $directory, int $workingDirPerms): void
+    {
+        $filesystem = new Filesystem;
+        $filesystem->remove($directory);
+
+        clearstatcache(true, $directory);
+
+        mkdir($directory, $workingDirPerms, true);
     }
 
     public function register(): void
