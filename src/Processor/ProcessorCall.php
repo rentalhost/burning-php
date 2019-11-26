@@ -17,6 +17,8 @@ class ProcessorCall
         STRING_COMPOSITION_INTEGER = 'i',
         STRING_COMPOSITION_FLOAT = 'f',
 
+        STRING_LENGTH_DECLARATION = 'l',
+
         ARRAY_COMPOSITION_MIXED = 'm',
         ARRAY_COMPOSITION_STRING = 's',
         ARRAY_COMPOSITION_INTEGER = 'i',
@@ -44,12 +46,12 @@ class ProcessorCall
 
                 $variableTypeStringLength = strlen($variable);
 
-                if ($variableTypeStringLength) {
-                    $variableArguments = [ $variableTypeStringLength ];
-
-                    if ($variableTypeStringLength <= 255) {
-                        $variableArguments[] = ProcessorStrings::getInstance()->getStringIndex($variable);
-                    }
+                if ($variableTypeStringLength > 255) {
+                    $variableArguments[] = self::STRING_LENGTH_DECLARATION;
+                    $variableArguments[] = $variableTypeStringLength;
+                }
+                else if ($variableTypeStringLength > 0) {
+                    $variableArguments[] = ProcessorStrings::getInstance()->getStringIndex($variable);
                 }
                 break;
             case 'NULL':
