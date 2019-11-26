@@ -47,7 +47,17 @@ class ProcessorCall
         switch (gettype($variable)) {
             case 'string':
                 $variableType      = 's';
-                $variableArguments = [ strlen($variable), self::getStringComposition($variable) ];
+                $variableArguments = [];
+
+                $variableTypeStringLength = strlen($variable);
+
+                if ($variableTypeStringLength) {
+                    $variableArguments = [ $variableTypeStringLength ];
+
+                    if ($variableTypeStringLength <= 255) {
+                        $variableArguments[] = $variable;
+                    }
+                }
                 break;
             case 'NULL':
                 $variableType      = 'N';
