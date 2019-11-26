@@ -36,6 +36,6 @@ class ExprAssignStatementWriter
 
     public static function getStatementCode(): int
     {
-        return 0;
+        return 1;
     }
 }

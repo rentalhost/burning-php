@@ -6,7 +6,7 @@ namespace Rentalhost\BurningPHP\Processor;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
-use Rentalhost\BurningPHP\Processor\StatementWriter\ExprAssignStatementWriter;
+use Rentalhost\BurningPHP\Processor\StatementWriter\ExprVariableStatementWriter;
 
 class ProcessorNodeVisitor
     extends NodeVisitorAbstract
@@ -52,18 +52,35 @@ class ProcessorNodeVisitor
                 $nodeStmts = [];
 
                 foreach ($node->stmts as $stmt) {
-                    if ($stmt instanceof Node\Stmt\Expression && $stmt->expr instanceof Node\Expr\Assign) {
-                        $statementIndex = ExprAssignStatementWriter::writeStatement($this->processorFile, $stmt->expr);
+                    if ($stmt instanceof Node\Stmt\Expression) {
+                        $stmtExpr = $stmt->expr;
 
-                        $nodeStmts[] = ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $stmt->expr);
+                        if ($stmtExpr instanceof Node\Expr\Assign &&
+                            $stmtExpr->var instanceof Node\Expr\Variable) {
+                            $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $stmtExpr->var);
 
-                        continue;
+                            $nodeStmts[] = ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $stmt->expr);
+
+                            continue;
+                        }
                     }
 
                     $nodeStmts[] = $stmt;
                 }
 
                 $node->stmts = $nodeStmts;
+            }
+        }
+
+        if ($node instanceof Node\Stmt\Foreach_) {
+            if ($node->valueVar instanceof Node\Expr\Variable) {
+                $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $node->valueVar);
+                array_unshift($node->stmts, ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $node->valueVar));
+            }
+
+            if ($node->keyVar) {
+                $statementIndex = ExprVariableStatementWriter::writeStatement($this->processorFile, $node->keyVar);
+                array_unshift($node->stmts, ProcessorCallFactory::createMethodCall('annotateType', $statementIndex, $node->keyVar));
             }
         }
 

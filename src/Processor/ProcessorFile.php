@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Rentalhost\BurningPHP\Processor;
 
+use PhpParser\Node;
 use Rentalhost\BurningPHP\BurningConfiguration;
 
 class ProcessorFile
@@ -85,6 +86,11 @@ class ProcessorFile
         fseek($this->sourceResource, $offset);
 
         return fread($this->sourceResource, $length);
+    }
+
+    public function getSourceSubstringFromNode(Node $node): string
+    {
+        return $this->getSourceSubstring($node->getStartFilePos(), $node->getEndFilePos());
     }
 
     public function writeSource(string $contents): void
