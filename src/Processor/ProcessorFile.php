@@ -9,6 +9,12 @@ use Rentalhost\BurningPHP\BurningConfiguration;
 
 class ProcessorFile
 {
+    /** @var resource */
+    public $callsResource;
+
+    /** @var string */
+    public $callsResourcePath;
+
     /** @var string */
     public $hash;
 
@@ -33,6 +39,9 @@ class ProcessorFile
     /** @var string */
     public $statementsResourcePath;
 
+    /** @var int[] */
+    private $annotationsTypesOccurrences = [];
+
     /** @var int */
     private $statementsCount;
 
@@ -49,11 +58,18 @@ class ProcessorFile
 
         $resourcesPath = str_replace('/', DIRECTORY_SEPARATOR, $burningConfiguration->getBurningDirectory() . '/caches/' . $this->hashFile);
 
+        $this->callsResourcePath      = $burningConfiguration->getBurningDirectory() . '/' .
+                                        $burningConfiguration->getPathWithSessionMask($this->hash . '.CALLS');
         $this->phpResourcePath        = $resourcesPath . '.php';
         $this->phpResource            = fopen($this->phpResourcePath, 'wb');
         $this->statementsResourcePath = $resourcesPath . '.php.STATEMENTS';
         $this->statementsResource     = fopen($this->statementsResourcePath, 'w+b');
         $this->statementsCount        = 0;
+    }
+
+    public function __destruct()
+    {
+        $this->writeAnnotationsTypesOccurrences();
     }
 
     public function appendStatementsToResource($statementsResource): void
@@ -91,6 +107,45 @@ class ProcessorFile
     public function getSourceSubstringFromNode(Node $node): string
     {
         return $this->getSourceSubstring($node->getStartFilePos(), $node->getEndFilePos());
+    }
+
+    public function increaseAnnotationTypeOccurrences(int $statementIndex, string $variableType, array $variableArguments): void
+    {
+        $processorString = Processor::stringifyArguments(array_merge([
+            $this->index,
+            $statementIndex,
+            '%u',
+            $variableType,
+        ], $variableArguments), false);
+
+        if (!array_key_exists($processorString, $this->annotationsTypesOccurrences)) {
+            $this->annotationsTypesOccurrences[$processorString] = 1;
+
+            return;
+        }
+
+        $this->annotationsTypesOccurrences[$processorString]++;
+    }
+
+    public function writeAnnotationsTypesOccurrences(): void
+    {
+        if ($this->annotationsTypesOccurrences) {
+            $this->callsResource = fopen($this->callsResourcePath, 'wb');
+
+            foreach ($this->annotationsTypesOccurrences as $occurrenceFormat => $occurrenceCount) {
+                $this->writeCallRaw(strtr($occurrenceFormat, [ '%u' => $occurrenceCount ]));
+            }
+        }
+    }
+
+    public function writeCall(int $statementIndex, ...$arguments): void
+    {
+        $this->writeCallRaw($statementIndex . Processor::stringifyArguments($arguments));
+    }
+
+    public function writeCallRaw(string $content): void
+    {
+        fwrite($this->callsResource, $content . "\n");
     }
 
     public function writeSource(string $contents): void
