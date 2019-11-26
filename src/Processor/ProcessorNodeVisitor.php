@@ -22,11 +22,11 @@ class ProcessorNodeVisitor
     public function enterNode(Node $node)
     {
         if ($node instanceof Node\Scalar\MagicConst\Dir) {
-            return new Node\Scalar\String_(dirname($this->processorFile->phpResourcePath));
+            return new Node\Scalar\String_(dirname($this->processorFile->sourceResourcePath));
         }
 
         if ($node instanceof Node\Scalar\MagicConst\File) {
-            return new Node\Scalar\String_($this->processorFile->phpResourcePath);
+            return new Node\Scalar\String_($this->processorFile->sourceResourcePath);
         }
 
         return parent::enterNode($node);

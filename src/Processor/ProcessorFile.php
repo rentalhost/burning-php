@@ -23,14 +23,14 @@ class ProcessorFile
     /** @var resource */
     public $sourceResource;
 
+    /** @var string */
+    public $sourceResourcePath;
+
     /** @var resource */
     public $statementsResource;
 
     /** @var string */
     public $statementsResourcePath;
-
-    /** @var string */
-    private $path;
 
     /** @var int */
     private $statementsCount;
@@ -39,8 +39,10 @@ class ProcessorFile
     {
         $burningConfiguration = BurningConfiguration::getInstance();
 
+        $this->sourceResource     = fopen($path, 'rb');
+        $this->sourceResourcePath = str_replace('/', DIRECTORY_SEPARATOR, $path);
+
         $this->index    = $index;
-        $this->path     = str_replace('/', DIRECTORY_SEPARATOR, $path);
         $this->hash     = strtoupper(substr(hash_file('sha256', $path), 0, 8));
         $this->hashFile = $this->hash . '_' . $this->getBasename();
 
@@ -51,7 +53,6 @@ class ProcessorFile
         $this->statementsResourcePath = $resourcesPath . '.php.STATEMENTS';
         $this->statementsResource     = fopen($this->statementsResourcePath, 'w+b');
         $this->statementsCount        = 0;
-        $this->sourceResource         = fopen($path, 'rb');
     }
 
     public function appendStatementsToResource($statementsResource): void
@@ -69,14 +70,14 @@ class ProcessorFile
 
     public function getBasename(): string
     {
-        return preg_replace('/\..+?$/', null, basename($this->path));
+        return preg_replace('/\..+?$/', null, basename($this->sourceResourcePath));
     }
 
     public function getShortPath(): string
     {
         $burningConfiguration = BurningConfiguration::getInstance();
 
-        return substr($this->path, strlen($burningConfiguration->currentWorkingDir) + 1);
+        return substr($this->sourceResourcePath, strlen($burningConfiguration->currentWorkingDir) + 1);
     }
 
     public function getSourceSubstring(int $offset, int $length): string
