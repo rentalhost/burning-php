@@ -95,13 +95,24 @@ class ProcessorCall
                         $variableArguments[] = count($variable) - $variableTypeBooleanTrue;
                     }
                     else if ($variableTypeArrayComposition === self::ARRAY_COMPOSITION_STRING) {
-                        $variableItemsUnique      = array_unique($variable);
-                        $variableItemsUniqueCount = count($variableItemsUnique);
+                        $variableItemsUnique       = array_unique($variable);
+                        $variableItemsUniqueCount  = count($variableItemsUnique);
+                        $variableItemsUniqueInline = $variableItemsUniqueCount <= 8;
 
-                        if ($variableItemsUniqueCount <= 8) {
+                        if ($variableItemsUniqueInline) {
+                            foreach ($variable as $variableItem) {
+                                if (strlen($variableItem) > 255) {
+                                    $variableItemsUniqueInline = false;
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($variableItemsUniqueInline) {
                             $processorStrings = ProcessorStrings::getInstance();
 
-                            $variableArguments   = array_merge($variableArguments, array_map([ $processorStrings, 'getStringIndex' ], $variableItemsUnique));
+                            $variableArguments = array_merge($variableArguments, array_map([ $processorStrings, 'getStringIndex' ], $variableItemsUnique));
                         }
                         else {
                             $variableTypeStringComposition = self::getStringComposition(self::getArrayFirstElement($variable));
