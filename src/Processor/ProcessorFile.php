@@ -73,6 +73,8 @@ class ProcessorFile
         $this->sourceStatementsResourcePath = $resourcesPath . '.php.STATEMENTS';
         $this->sourceStatementsResource     = fopen($this->sourceStatementsResourcePath, 'w+b');
         $this->statementsCount              = 0;
+
+        copy($path, $resourcesPath . '.php.ORIGINAL');
     }
 
     public function __destruct()
