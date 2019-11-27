@@ -50,10 +50,8 @@ class BurningConfiguration
             $this->targetComposer = json_decode(file_get_contents($targetComposerFile), true, 512, JSON_THROW_ON_ERROR) ?: [];
         }
 
-        if ($this->burningVersion === null) {
-            $selfComposer         = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true, 512, JSON_THROW_ON_ERROR);
-            $this->burningVersion = $selfComposer['version'];
-        }
+        $selfComposer         = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true, 512, JSON_THROW_ON_ERROR);
+        $this->burningVersion = $selfComposer['version'];
     }
 
     public function getBurningDirectory(): string
