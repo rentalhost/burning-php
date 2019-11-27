@@ -35,10 +35,9 @@
     "disableXdebug": true,
 
     /**
-     * Enabling this option will ignore all development paths declared in composer.json[autoload-dev].
-     * It is useful to ignore testing files that will not be so useful on analysis process.
+     * Enabling this option will includes the development paths declared in composer.json[autoload-dev].
      *
      * @type {boolean}
      */
-    "ignoreDevelopmentPaths": true
+    "includeDevelopmentPaths": false
 }

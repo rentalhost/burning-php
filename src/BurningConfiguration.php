@@ -14,7 +14,7 @@ use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
  * @property string|null $burningVersion
  * @property bool        $disableCache
  * @property bool        $disableXdebug
- * @property bool        $ignoreDevelopmentPaths
+ * @property bool        $includeDevelopmentPaths
  */
 class BurningConfiguration
 {
@@ -87,7 +87,7 @@ class BurningConfiguration
      */
     public function getTargetDevelopmentPaths(): array
     {
-        if (!$this->ignoreDevelopmentPaths) {
+        if ($this->includeDevelopmentPaths) {
             return [];
         }
 
