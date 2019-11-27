@@ -23,7 +23,7 @@ class BurningConfiguration
         SingletonPatternTrait;
 
     private const
-        DEFAULT_CONFIGURATION_FILE = __DIR__ . '/../.burning.json';
+        DEFAULT_CONFIGURATION_FILE = __DIR__ . '/../burning.json';
 
     /** @var string */
     public $currentWorkingDir;
@@ -34,7 +34,7 @@ class BurningConfiguration
     public function __construct()
     {
         $defaultConfigurationFile = realpath(self::DEFAULT_CONFIGURATION_FILE);
-        $userConfigurationFile    = realpath(getcwd() . '/.burning.json') ?: null;
+        $userConfigurationFile    = realpath(getcwd() . '/burning.json') ?: null;
 
         $this->mergeWith($defaultConfigurationFile);
 
