@@ -9,7 +9,6 @@ use Rentalhost\BurningPHP\Support\Traits\HasAttributesTrait;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 /**
- * @property string      $burningDirectory
  * @property string      $burningSessionFolderFormat
  * @property string|null $burningVersion
  * @property bool        $disableCache
@@ -55,7 +54,7 @@ class BurningConfiguration
 
     public function getBurningDirectory(): string
     {
-        return $this->currentWorkingDir . DIRECTORY_SEPARATOR . $this->burningDirectory;
+        return $this->currentWorkingDir . DIRECTORY_SEPARATOR . '.burning';
     }
 
     public function getBurningSessionFolder(): string

@@ -1,12 +1,5 @@
 {
     /**
-     * Burning control directory, based on the current working dir.
-     *
-     * @type {string}
-     */
-    "burningDirectory": ".burning",
-
-    /**
      * Burning output session folder format, that will be stored at Burning control directory.
      *
      * Placeholders:
