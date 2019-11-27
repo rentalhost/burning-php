@@ -20,12 +20,14 @@
     "disableCache": false,
 
     /**
-     * Disable Xdebug if it is enabled on your php.ini.
-     * It will speed up Burning in 5~10x.
+     * Allow Xdebug when it is enabled on your php.ini.
+     * By default, if Xdebug is identified and active, it will disable before process start.
+     *
+     * Caution: it will slow down the Burning processing about 5x~10x.
      *
      * @type {boolean}
      */
-    "disableXdebug": true,
+    "allowXdebug": false,
 
     /**
      * Enabling this option will includes the development paths declared in composer.json[autoload-dev].

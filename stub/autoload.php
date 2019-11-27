@@ -9,7 +9,7 @@ use Rentalhost\BurningPHP\BurningConfiguration;
 if (!class_exists(BurningAutoloader::class, false)) {
     require '$composerAutoloadReal';
 
-    if (BurningConfiguration::getInstance()->disableXdebug) {
+    if (!BurningConfiguration::getInstance()->allowXdebug) {
         $xdebugHandler = new XdebugHandler('BURNING');
         $xdebugHandler->check();
     }
