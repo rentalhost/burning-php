@@ -52,8 +52,7 @@ class BurningAutoloader
             }
         }
 
-        $burningHeaderFile     = $burningControlDirectory . '/' .
-                                 $burningConfiguration->getPathWithSessionMask('HEADER');
+        $burningHeaderFile     = $burningControlDirectory . '/HEADER';
         $burningHeaderContents = sprintf("BURNING v%u c%s\n",
             $burningConfiguration->getBurningVersionInt(),
             $burningConfiguration->getHash());
@@ -70,6 +69,9 @@ class BurningAutoloader
         }
 
         file_put_contents($burningHeaderFile, $burningHeaderContents);
+
+        copy($burningHeaderFile, $burningControlDirectory . '/' .
+                                 $burningConfiguration->getPathWithSessionMask('HEADER'));
     }
 
     private static function rebuildDirectory(string $directory, int $workingDirPerms): void
