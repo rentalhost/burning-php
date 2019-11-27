@@ -17,13 +17,6 @@
     "burningSessionFolderFormat": "session-{%requestMs}",
 
     /**
-     * Enable Burning only if Composer was dumped in devMode.
-     *
-     * @type {boolean}
-     */
-    "devOnly": true,
-
-    /**
      * Disable the Processor file cache.
      * You should disable it only if you are modifying the Burning source.
      *

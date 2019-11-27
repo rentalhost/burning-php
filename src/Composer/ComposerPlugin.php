@@ -10,7 +10,6 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
-use Rentalhost\BurningPHP\BurningConfiguration;
 
 class ComposerPlugin
     implements PluginInterface,
@@ -25,9 +24,7 @@ class ComposerPlugin
 
     public static function postAutoloadDump(Event $event): void
     {
-        $burningConfiguration = BurningConfiguration::getInstance();
-
-        if (!$burningConfiguration->devOnly || $event->isDevMode()) {
+        if (!$event->isDevMode()) {
             $composer             = $event->getComposer();
             $composerAutoload     = realpath($composer->getConfig()->get('vendor-dir') . '/autoload.php');
             $composerAutoloadReal = dirname($composerAutoload) . '/autoload_composer.php';

@@ -12,7 +12,6 @@ use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
  * @property string      $burningDirectory
  * @property string      $burningSessionFolderFormat
  * @property string|null $burningVersion
- * @property bool        $devOnly
  * @property bool        $disableCache
  * @property bool        $disableXdebug
  * @property bool        $ignoreDevelopmentPaths
