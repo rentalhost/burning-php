@@ -160,7 +160,7 @@ class ProcessorFile
         fclose($this->phpResource);
     }
 
-    public function writeStatement(int $statementType, ...$statementArguments): int
+    public function writeStatement(int $statementType, array $statementArguments): int
     {
         fwrite($this->sourceStatementsResource, $statementType . Processor::stringifyArguments($statementArguments) . "\n");
 

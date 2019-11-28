@@ -10,10 +10,14 @@ use Rentalhost\BurningPHP\Processor\ProcessorFile;
 abstract class StatementWriterAbstract
     implements StatementWriterInterface
 {
-    public static function writeStatement(ProcessorFile $processorFile, Node $node): int
+    public static function writeStatement(ProcessorFile $processorFile, Node $node, ?array $additionalArguments = null): int
     {
         assert(in_array(StatementWriterInterface::class, class_implements(static::class), true));
 
-        return $processorFile->writeStatement(static::getStatementCode(), ... static::getStatementArguments($processorFile, $node));
+        $arguments = $additionalArguments
+            ? array_merge(static::getStatementArguments($processorFile, $node), $additionalArguments)
+            : static::getStatementArguments($processorFile, $node);
+
+        return $processorFile->writeStatement(static::getStatementCode(), $arguments);
     }
 }

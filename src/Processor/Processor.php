@@ -12,6 +12,7 @@ use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard as PrettyPrinter;
 use Rentalhost\BurningPHP\BurningConfiguration;
 use Rentalhost\BurningPHP\Processor\NodeVisitor\DirFileFixNodeVisitor;
+use Rentalhost\BurningPHP\Processor\ScopeManager\ScopeManager;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 class Processor
@@ -86,6 +87,9 @@ class Processor
         $traverser->addVisitor(new DirFileFixNodeVisitor($processorFile));
 
         $modifiedFileStatements = $traverser->traverse($fileStatements);
+
+        $scopeManager = new ScopeManager($processorFile);
+        $scopeManager->processStatements($modifiedFileStatements);
 
         $processorFile->writeSource((new PrettyPrinter)->prettyPrintFile($modifiedFileStatements));
 

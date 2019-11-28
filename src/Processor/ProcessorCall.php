@@ -37,7 +37,7 @@ class ProcessorCall
      * @param mixed $variable
      * @return mixed
      */
-    public static function annotateType(string $filePath, int $statementIndex, $variable)
+    public static function annotateVariable(string $filePath, int $statementIndex, $variable)
     {
         switch (gettype($variable)) {
             case 'string':

@@ -8,17 +8,14 @@ use PhpParser\Node;
 use Rentalhost\BurningPHP\Processor\ProcessorFile;
 use Rentalhost\BurningPHP\Processor\StatementWriter\Support\StatementWriterAbstract;
 
-class ExprVariableStatementWriter
+class FunctionParameterStatementWriter
     extends StatementWriterAbstract
 {
     public static function getStatementArguments(ProcessorFile $processorFile, Node $node): array
     {
         assert($node instanceof Node\Expr\Variable);
 
-        $nodeOffset = $node->getStartFilePos();
-        $nodeLength = $node->getEndFilePos() - $nodeOffset + 1;
-
-        return [ $nodeOffset . ':' . $nodeLength ];
+        return [ $node->getStartFilePos() ];
     }
 
     public static function getStatementCode(): int
