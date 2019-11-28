@@ -39,18 +39,28 @@ class ExpressionStatement
         return false;
     }
 
+    public static function applyStatement(ScopeManager $scopeManager, Node\Stmt $nodeStmt, ?array &$nodes = null): ?Node\Stmt
+    {
+        if (self::apply($scopeManager, $nodeStmt, $nodes)) {
+            return null;
+        }
+
+        IfStatement::apply($scopeManager, $nodeStmt) ||
+        ForStatement::apply($scopeManager, $nodeStmt);
+
+        return $nodeStmt;
+    }
+
     public static function applyStatements(ScopeManager $scopeManager, array $nodeStmts): array
     {
         $resultNodeStmts = [];
 
         foreach ($nodeStmts as $nodeStmt) {
-            if (self::apply($scopeManager, $nodeStmt, $resultNodeStmts)) {
-                continue;
+            $nodeUpdated = self::applyStatement($scopeManager, $nodeStmt, $resultNodeStmts);
+
+            if ($nodeUpdated) {
+                $resultNodeStmts[] = $nodeUpdated;
             }
-
-            IfStatement::apply($scopeManager, $nodeStmt);
-
-            $resultNodeStmts[] = $nodeStmt;
         }
 
         return $resultNodeStmts;
