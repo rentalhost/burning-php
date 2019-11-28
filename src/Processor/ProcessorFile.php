@@ -60,9 +60,10 @@ class ProcessorFile
 
         $this->index    = $index;
         $this->hash     = strtoupper(substr(hash_file('sha256', $path), 0, 8));
-        $this->hashFile = $this->hash . '_' . $this->getBasename();
+        $this->hashFile = $this->hash . '_' . $burningConfiguration->burningSourceHash . '_' . $burningConfiguration->getHash() . '_' . $this->getBasename();
 
-        $resourcesPath = str_replace('/', DIRECTORY_SEPARATOR, $burningConfiguration->getBurningDirectory() . '/caches/' . $this->hashFile);
+        $cachePath     = str_replace('/', DIRECTORY_SEPARATOR, $burningConfiguration->getBurningDirectory() . '/cache/');
+        $resourcesPath = $cachePath . $this->hashFile;
 
         $this->callsResourcePath            = $burningConfiguration->getBurningDirectory() . '/' .
                                               $burningConfiguration->getPathWithSessionMask($this->hash . '.CALLS');
@@ -74,7 +75,7 @@ class ProcessorFile
         $this->sourceStatementsResource     = fopen($this->sourceStatementsResourcePath, 'w+b');
         $this->statementsCount              = 0;
 
-        copy($path, $resourcesPath . '.php.ORIGINAL');
+        copy($path, $cachePath . $this->hash . '_' . $this->getBasename() . '.php');
     }
 
     public function __destruct()

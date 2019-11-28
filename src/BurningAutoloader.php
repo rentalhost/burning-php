@@ -34,7 +34,7 @@ class BurningAutoloader
     {
         $burningConfiguration    = BurningConfiguration::getInstance();
         $burningControlDirectory = $burningConfiguration->getBurningDirectory();
-        $burningCacheDirectory   = $burningControlDirectory . '/caches';
+        $burningCacheDirectory   = $burningControlDirectory . '/cache';
         $burningSessionDirectory = $burningControlDirectory . '/' . $burningConfiguration->getBurningSessionFolder();
 
         $burningDirectories = [
@@ -55,19 +55,8 @@ class BurningAutoloader
         $burningHeaderFile     = $burningControlDirectory . '/HEADER';
         $burningHeaderContents = sprintf("BURNING v%u s%s c%s\n",
             $burningConfiguration->getBurningVersionInt(),
-            $burningConfiguration->getBurningSourceHash(),
+            $burningConfiguration->burningSourceHash,
             $burningConfiguration->getHash());
-
-        if (is_file($burningHeaderFile)) {
-            $burningHeaderContentsPrevious = file_get_contents($burningHeaderFile);
-
-            if ($burningHeaderContentsPrevious !== $burningHeaderContents) {
-                self::rebuildDirectory($burningCacheDirectory, $workingDirPerms);
-            }
-        }
-        else {
-            self::rebuildDirectory($burningCacheDirectory, $workingDirPerms);
-        }
 
         file_put_contents($burningHeaderFile, $burningHeaderContents);
 

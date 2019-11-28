@@ -12,6 +12,7 @@ use Symfony\Component\Finder\Finder;
 /**
  * @property string      $burningSessionFolderFormat
  * @property string|null $burningVersion
+ * @property string|null $burningSourceHash
  * @property bool        $allowXdebug
  * @property bool        $includeDevelopmentPaths
  */
@@ -48,8 +49,10 @@ class BurningConfiguration
             $this->targetComposer = json_decode(file_get_contents($targetComposerFile), true, 512, JSON_THROW_ON_ERROR) ?: [];
         }
 
-        $selfComposer         = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true, 512, JSON_THROW_ON_ERROR);
-        $this->burningVersion = $selfComposer['version'];
+        $selfComposer = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true, 512, JSON_THROW_ON_ERROR);
+
+        $this->burningVersion    = $selfComposer['version'];
+        $this->burningSourceHash = $this->getBurningSourceHash();
     }
 
     public function getBurningDirectory(): string
@@ -75,7 +78,7 @@ class BurningConfiguration
             $filesModificationTime[] = $file->getMTime();
         }
 
-        return substr(hash('sha256', implode(',', $filesModificationTime)), 0, 8);
+        return strtoupper(substr(hash('sha256', implode(',', $filesModificationTime)), 0, 8));
     }
 
     public function getBurningVersionInt(): int
