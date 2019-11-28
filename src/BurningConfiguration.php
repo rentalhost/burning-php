@@ -7,11 +7,11 @@ namespace Rentalhost\BurningPHP;
 use ColinODell\Json5\Json5Decoder;
 use Rentalhost\BurningPHP\Support\Traits\HasAttributesTrait;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @property string      $burningSessionFolderFormat
  * @property string|null $burningVersion
- * @property bool        $disableCache
  * @property bool        $allowXdebug
  * @property bool        $includeDevelopmentPaths
  */
@@ -62,6 +62,20 @@ class BurningConfiguration
         return strtr($this->burningSessionFolderFormat, [
             '{%requestMs}' => str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0')
         ]);
+    }
+
+    public function getBurningSourceHash(): string
+    {
+        $finder = new Finder;
+        $finder->files()->in(__DIR__);
+
+        $filesModificationTime = [];
+
+        foreach ($finder as $file) {
+            $filesModificationTime[] = $file->getMTime();
+        }
+
+        return substr(hash('sha256', implode(',', $filesModificationTime)), 0, 8);
     }
 
     public function getBurningVersionInt(): int

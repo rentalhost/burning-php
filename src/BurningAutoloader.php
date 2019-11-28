@@ -53,19 +53,20 @@ class BurningAutoloader
         }
 
         $burningHeaderFile     = $burningControlDirectory . '/HEADER';
-        $burningHeaderContents = sprintf("BURNING v%u c%s\n",
+        $burningHeaderContents = sprintf("BURNING v%u s%s c%s\n",
             $burningConfiguration->getBurningVersionInt(),
+            $burningConfiguration->getBurningSourceHash(),
             $burningConfiguration->getHash());
 
-        if ($burningConfiguration->disableCache) {
-            self::rebuildDirectory($burningCacheDirectory, $workingDirPerms);
-        }
-        else if (is_file($burningHeaderFile)) {
+        if (is_file($burningHeaderFile)) {
             $burningHeaderContentsPrevious = file_get_contents($burningHeaderFile);
 
             if ($burningHeaderContentsPrevious !== $burningHeaderContents) {
                 self::rebuildDirectory($burningCacheDirectory, $workingDirPerms);
             }
+        }
+        else {
+            self::rebuildDirectory($burningCacheDirectory, $workingDirPerms);
         }
 
         file_put_contents($burningHeaderFile, $burningHeaderContents);

@@ -10,16 +10,6 @@
     "burningSessionFolderFormat": "session-{%requestMs}",
 
     /**
-     * Disable the Processor file cache.
-     * You should disable it only if you are modifying the Burning source.
-     *
-     * Actually, the cache files will be generated anyway, but it will be regenerated every time that it is requested.
-     *
-     * @type {boolean}
-     */
-    "disableCache": false,
-
-    /**
      * Allow Xdebug when it is enabled on your php.ini.
      * By default, if Xdebug is identified and active, it will disable before process start.
      *
