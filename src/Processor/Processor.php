@@ -6,10 +6,12 @@ namespace Rentalhost\BurningPHP\Processor;
 
 use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard as PrettyPrinter;
 use Rentalhost\BurningPHP\BurningConfiguration;
+use Rentalhost\BurningPHP\Processor\NodeVisitor\DirFileFixNodeVisitor;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 class Processor
@@ -80,7 +82,8 @@ class Processor
         $fileStatements = $this->parser->parse(file_get_contents($filePath));
 
         $traverser = new NodeTraverser;
-        $traverser->addVisitor(new ProcessorNodeVisitor($processorFile));
+        $traverser->addVisitor(new NameResolver);
+        $traverser->addVisitor(new DirFileFixNodeVisitor($processorFile));
 
         $modifiedFileStatements = $traverser->traverse($fileStatements);
 
