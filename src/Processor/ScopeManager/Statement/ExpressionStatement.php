@@ -48,7 +48,8 @@ class ExpressionStatement
                 continue;
             }
 
-            IfStatement::apply($scopeManager, $nodeStmt);
+            IfStatement::apply($scopeManager, $nodeStmt) ||
+            ForStatement::apply($scopeManager, $nodeStmt);
 
             $resultNodeStmts[] = $nodeStmt;
         }
