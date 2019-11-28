@@ -1,15 +1,5 @@
 {
     /**
-     * Burning output session folder format, that will be stored at Burning control directory.
-     *
-     * Placeholders:
-     * - {%requestMs}  will be replaced by the request time microseconds.
-     *
-     * @type {string}
-     */
-    "burningSessionFolderFormat": "session-{%requestMs}",
-
-    /**
      * Allow Xdebug when it is enabled on your php.ini.
      * By default, if Xdebug is identified and active, it will disable before process start.
      *

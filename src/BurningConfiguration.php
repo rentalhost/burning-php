@@ -10,7 +10,6 @@ use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 use Symfony\Component\Finder\Finder;
 
 /**
- * @property string      $burningSessionFolderFormat
  * @property string|null $burningVersion
  * @property string|null $burningSourceHash
  * @property bool        $allowXdebug
@@ -62,9 +61,7 @@ class BurningConfiguration
 
     public function getBurningSessionFolder(): string
     {
-        return strtr($this->burningSessionFolderFormat, [
-            '{%requestMs}' => str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0')
-        ]);
+        return 'session-' . str_pad(var_export($_SERVER['REQUEST_TIME_FLOAT'], true), 17, '0');
     }
 
     public function getBurningSourceHash(): string
