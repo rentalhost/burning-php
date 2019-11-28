@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Rentalhost\BurningPHP\Processor;
+namespace Rentalhost\BurningPHP\Processor\VariableManager;
 
-class VariablesBag
+class VariableManager
     extends \ArrayObject
 {
     public function getVariable(string $name): ?int

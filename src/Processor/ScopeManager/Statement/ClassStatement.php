@@ -10,7 +10,7 @@ use Rentalhost\BurningPHP\Processor\ScopeManager\ScopeManager;
 class ClassStatement
     extends StatementAbstract
 {
-    public static function apply(ScopeManager $scopeManager, Node $node): bool
+    public static function apply(ScopeManager $scopeManager, Node $node, ?array &$nodes = null): bool
     {
         if ($node instanceof Node\Stmt\Class_) {
             $scopeManager->prefixManager->append(ScopeManager::PREFIX_CLASS . $node->name->toString());

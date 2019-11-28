@@ -9,5 +9,5 @@ use Rentalhost\BurningPHP\Processor\ScopeManager\ScopeManager;
 
 abstract class StatementAbstract
 {
-    abstract public static function apply(ScopeManager $scopeManager, Node $node): bool;
+    abstract public static function apply(ScopeManager $scopeManager, Node $node, ?array &$nodes = null): bool;
 }

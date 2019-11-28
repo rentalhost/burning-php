@@ -12,24 +12,26 @@ use Rentalhost\BurningPHP\Processor\StatementWriter\FunctionParameterStatementWr
 class MethodStatement
     extends StatementAbstract
 {
-    public static function apply(ScopeManager $scopeManager, Node $node): bool
+    public static function apply(ScopeManager $scopeManager, Node $node, ?array &$nodes = null): bool
     {
         if ($node instanceof Node\Stmt\ClassMethod) {
             $scopeManager->prefixManager->append(ScopeManager::PREFIX_METHOD . $node->name->toString());
 
             if ($node->stmts) {
-                $nodeCallStmts = [];
+                $nodeParamsStmts = [];
 
                 /** @var Node\Param $nodeParam */
                 foreach ($node->params as $nodeParam) {
                     $variableStatementIndex = FunctionParameterStatementWriter::writeStatement($scopeManager->processorFile, $nodeParam->var, [
-                        $scopeManager->prefixManager->toString(ScopeManager::PREFIX_PARAMETER . $nodeParam->var->name)
+                        $scopeManager->prefixManager->toString(ScopeManager::PREFIX_PARAMETER_VARIABLE . $nodeParam->var->name)
                     ]);
 
-                    $nodeCallStmts[] = ProcessorCallFactory::createVariableAnnotationCall($variableStatementIndex, $nodeParam->var);
+                    $nodeParamsStmts[] = ProcessorCallFactory::createVariableAnnotationCall($variableStatementIndex, $nodeParam->var);
+
+                    $scopeManager->variableManager->registerVariable($nodeParam->var->name, $variableStatementIndex);
                 }
 
-                array_unshift($node->stmts, ... $nodeCallStmts);
+                $node->stmts = array_merge($nodeParamsStmts, ExpressionStatement::applyStatements($scopeManager, $node->stmts));
             }
 
             $scopeManager->prefixManager->pop();

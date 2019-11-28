@@ -10,7 +10,7 @@ use Rentalhost\BurningPHP\Processor\ScopeManager\ScopeManager;
 class NamespaceStatement
     extends StatementAbstract
 {
-    public static function apply(ScopeManager $scopeManager, Node $node): bool
+    public static function apply(ScopeManager $scopeManager, Node $node, ?array &$nodes = null): bool
     {
         if ($node instanceof Node\Stmt\Namespace_) {
             $scopeManager->prefixManager->append(ScopeManager::PREFIX_NAMESPACE . $node->name->toString());
