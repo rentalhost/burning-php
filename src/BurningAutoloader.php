@@ -30,12 +30,28 @@ class BurningAutoloader
         );
     }
 
+    private static function createDirectoryLink(string $directoryReal, string $directoryLink, ?bool $overwrite = null): bool
+    {
+        if ($overwrite === true && is_dir($directoryLink)) {
+            rmdir($directoryLink);
+        }
+
+        if (PHP_OS_FAMILY !== 'Windows') {
+            return symlink($directoryReal, $directoryLink);
+        }
+
+        exec('mklink /J ' . escapeshellarg($directoryLink) . ' ' . escapeshellarg($directoryReal));
+
+        return is_dir($directoryLink);
+    }
+
     private static function generateControlDirectory(): void
     {
-        $burningConfiguration    = BurningConfiguration::getInstance();
-        $burningControlDirectory = $burningConfiguration->getBurningDirectory();
-        $burningCacheDirectory   = $burningControlDirectory . '/cache';
-        $burningSessionDirectory = $burningControlDirectory . '/' . $burningConfiguration->getBurningSessionFolder();
+        $burningConfiguration        = BurningConfiguration::getInstance();
+        $burningControlDirectory     = $burningConfiguration->getBurningDirectory();
+        $burningCacheDirectory       = $burningControlDirectory . '/cache';
+        $burningSessionDirectory     = $burningControlDirectory . '/' . $burningConfiguration->getBurningSessionFolder();
+        $burningSessionLastDirectory = $burningControlDirectory . '/session-last';
 
         $burningDirectories = [
             $burningControlDirectory,
@@ -45,6 +61,7 @@ class BurningAutoloader
         $workingDirPerms = fileperms($burningConfiguration->currentWorkingDir);
 
         self::rebuildDirectory($burningSessionDirectory, $workingDirPerms);
+        self::createDirectoryLink($burningSessionDirectory, $burningSessionLastDirectory, true);
 
         foreach ($burningDirectories as $burningDirectory) {
             if (!is_dir($burningDirectory)) {
