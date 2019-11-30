@@ -20,6 +20,8 @@ class ExpressionStatement
             if ($nodeExpr instanceof Node\Expr\Assign) {
                 $nodeExprVar = $nodeExpr->var;
 
+                $nodeExpr->expr = self::applyStatement($scopeManager, $nodeExpr->expr);
+
                 if ($nodeExprVar instanceof Node\Expr\Variable && is_string($nodeExprVar->name)) {
                     $variableStatementIndex = $scopeManager->variableManager->getVariable($nodeExprVar->name) ??
                                               $scopeManager->variableManager->registerVariable(
@@ -39,7 +41,7 @@ class ExpressionStatement
         return false;
     }
 
-    public static function applyStatement(ScopeManager $scopeManager, Node\Stmt $nodeStmt, ?array &$nodes = null): ?Node\Stmt
+    public static function applyStatement(ScopeManager $scopeManager, Node $nodeStmt, ?array &$nodes = null): ?Node
     {
         if (self::apply($scopeManager, $nodeStmt, $nodes)) {
             return null;
@@ -48,7 +50,7 @@ class ExpressionStatement
         IfStatement::apply($scopeManager, $nodeStmt) ||
         ForStatement::apply($scopeManager, $nodeStmt) ||
         TryCatchStatement::apply($scopeManager, $nodeStmt) ||
-        StaticCallStatement::apply($scopeManager, $nodeStmt);
+        FuncCallStatement::apply($scopeManager, $nodeStmt);
 
         return $nodeStmt;
     }
