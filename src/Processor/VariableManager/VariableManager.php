@@ -27,7 +27,7 @@ class VariableManager
 
     public function push(): void
     {
-        $this->stacks = $this->getArrayCopy();
+        $this->stacks[] = $this->getArrayCopy();
         $this->exchangeArray([]);
     }
 
