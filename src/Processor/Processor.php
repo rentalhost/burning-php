@@ -58,9 +58,8 @@ class Processor
     public static function stringifyString(string $string): string
     {
         if ($string !== '0') {
-            if (!$string ||
-                strpos($string, ' ') !== false) {
-                return '<' . addcslashes($string, '>') . '>';
+            if (!$string || preg_match('/[>\r\n]/', $string)) {
+                return '<' . addcslashes($string, ">\n\r") . '>';
             }
         }
 
