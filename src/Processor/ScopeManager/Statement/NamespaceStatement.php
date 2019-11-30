@@ -16,7 +16,7 @@ class NamespaceStatement
             $scopeManager->prefixManager->append(ScopeManager::PREFIX_NAMESPACE . $node->name->toString());
 
             foreach ($node->stmts as $nodeStmt) {
-                ClassStatement::apply($scopeManager, $nodeStmt);
+                ClassLikeStatement::apply($scopeManager, $nodeStmt);
             }
 
             $scopeManager->prefixManager->pop();

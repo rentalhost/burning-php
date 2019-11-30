@@ -7,12 +7,12 @@ namespace Rentalhost\BurningPHP\Processor\ScopeManager\Statement;
 use PhpParser\Node;
 use Rentalhost\BurningPHP\Processor\ScopeManager\ScopeManager;
 
-class ClassStatement
+class ClassLikeStatement
     extends StatementAbstract
 {
     public static function apply(ScopeManager $scopeManager, Node $node, ?array &$nodes = null): bool
     {
-        if ($node instanceof Node\Stmt\Class_) {
+        if ($node instanceof Node\Stmt\ClassLike) {
             $scopeManager->prefixManager->append(ScopeManager::PREFIX_CLASS . $node->name->toString());
 
             /** @var Node\Stmt $nodeStmt */

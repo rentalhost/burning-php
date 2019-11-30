@@ -20,7 +20,7 @@ class ExpressionStatement
             if ($nodeExpr instanceof Node\Expr\Assign) {
                 $nodeExprVar = $nodeExpr->var;
 
-                if ($nodeExprVar instanceof Node\Expr\Variable) {
+                if ($nodeExprVar instanceof Node\Expr\Variable && is_string($nodeExprVar->name)) {
                     $variableStatementIndex = $scopeManager->variableManager->getVariable($nodeExprVar->name) ??
                                               $scopeManager->variableManager->registerVariable(
                                                   $nodeExprVar->name,
