@@ -24,20 +24,20 @@ class ProcessorFile
     /** @var int */
     public $index;
 
-    /** @var resource */
-    public $phpResource;
-
-    /** @var string */
-    public $phpResourcePath;
-
     /** @var string */
     public $sessionStatementResourcePath;
 
     /** @var resource */
-    public $sourceResource;
+    public $sourceOriginalResource;
 
     /** @var string */
-    public $sourceResourcePath;
+    public $sourceOriginalResourcePath;
+
+    /** @var resource */
+    public $sourceProcessedResource;
+
+    /** @var string */
+    public $sourceProcessedResourcePath;
 
     /** @var resource */
     public $sourceStatementsResource;
@@ -55,8 +55,8 @@ class ProcessorFile
     {
         $burningConfiguration = BurningConfiguration::getInstance();
 
-        $this->sourceResource     = fopen($path, 'rb');
-        $this->sourceResourcePath = str_replace('/', DIRECTORY_SEPARATOR, $path);
+        $this->sourceOriginalResource     = fopen($path, 'rb');
+        $this->sourceOriginalResourcePath = str_replace('/', DIRECTORY_SEPARATOR, $path);
 
         $this->index    = $index;
         $this->hash     = strtoupper(substr(hash_file('sha256', $path), 0, 8));
@@ -67,8 +67,8 @@ class ProcessorFile
 
         $this->callsResourcePath            = $burningConfiguration->getBurningDirectory() . '/' .
                                               $burningConfiguration->getPathWithSessionMask($this->hash . '.CALLS');
-        $this->phpResourcePath              = $resourcesPath . '.php';
-        $this->phpResource                  = fopen($this->phpResourcePath, 'wb');
+        $this->sourceProcessedResourcePath  = $resourcesPath . '.php';
+        $this->sourceProcessedResource      = fopen($this->sourceProcessedResourcePath, 'wb');
         $this->sessionStatementResourcePath = $burningConfiguration->getBurningDirectory() . '/' .
                                               $burningConfiguration->getPathWithSessionMask($this->hash . '.STATEMENTS');
         $this->sourceStatementsResourcePath = $resourcesPath . '.php.STATEMENTS';
@@ -93,21 +93,21 @@ class ProcessorFile
 
     public function getBasename(): string
     {
-        return preg_replace('/\..+?$/', null, basename($this->sourceResourcePath));
+        return preg_replace('/\..+?$/', null, basename($this->sourceOriginalResourcePath));
     }
 
     public function getShortPath(): string
     {
         $burningConfiguration = BurningConfiguration::getInstance();
 
-        return substr($this->sourceResourcePath, strlen($burningConfiguration->currentWorkingDir) + 1);
+        return substr($this->sourceOriginalResourcePath, strlen($burningConfiguration->currentWorkingDir) + 1);
     }
 
     public function getSourceSubstring(int $offset, int $length): string
     {
-        fseek($this->sourceResource, $offset);
+        fseek($this->sourceOriginalResource, $offset);
 
-        return fread($this->sourceResource, $length);
+        return fread($this->sourceOriginalResource, $length);
     }
 
     public function getSourceSubstringFromNode(Node $node): string
@@ -156,8 +156,8 @@ class ProcessorFile
 
     public function writeSource(string $contents): void
     {
-        fwrite($this->phpResource, $contents);
-        fclose($this->phpResource);
+        fwrite($this->sourceProcessedResource, $contents);
+        fclose($this->sourceProcessedResource);
     }
 
     public function writeStatement(int $statementType, array $statementArguments): int

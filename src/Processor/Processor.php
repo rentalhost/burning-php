@@ -75,7 +75,7 @@ class Processor
     {
         $processorFile = new ProcessorFile($filePath, count($this->files));
 
-        $this->files[$processorFile->phpResourcePath] = $processorFile;
+        $this->files[$processorFile->sourceProcessedResourcePath] = $processorFile;
 
         fwrite($this->filesResource, self::stringifyArguments([ $processorFile->hash, $processorFile->getShortPath() ], false) . "\n");
 

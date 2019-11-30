@@ -91,6 +91,23 @@ class BurningAutoloader
         mkdir($directory, $workingDirPerms, true);
     }
 
+    public function getProcessedSourcePath(string $file): string
+    {
+        if (!$file || !is_readable($file)) {
+            return $file;
+        }
+
+        $file = realpath($file);
+
+        foreach ($this->ignorablePrefixes as $ignorablePrefix) {
+            if (strpos($file, $ignorablePrefix) === 0) {
+                return $file;
+            }
+        }
+
+        return Processor::getInstance()->process($file)->sourceProcessedResourcePath;
+    }
+
     public function register(): void
     {
         self::generateControlDirectory();
@@ -108,21 +125,11 @@ class BurningAutoloader
 
         $file = $this->composerClassLoader->findFile($classname);
 
-        if (!$file || !is_readable($file)) {
+        if (!$file) {
             return false;
         }
 
-        $file = realpath($file);
-
-        foreach ($this->ignorablePrefixes as $ignorablePrefix) {
-            if (strpos($file, $ignorablePrefix) === 0) {
-                return false;
-            }
-        }
-
-        $processorFile = Processor::getInstance()->process($file);
-
-        includeFile($processorFile->phpResourcePath);
+        includeFile($this->getProcessedSourcePath($file));
 
         return true;
     }

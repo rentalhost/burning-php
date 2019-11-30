@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Rentalhost\BurningPHP\Processor;
 
+use Rentalhost\BurningPHP\BurningAutoloader;
 use Rentalhost\BurningPHP\Support\Traits\SingletonPatternTrait;
 
 class ProcessorCall
@@ -173,6 +174,11 @@ class ProcessorCall
         Processor::getInstance()->getFile($filePath)->increaseAnnotationTypeOccurrences($statementIndex, $variableType, $variableArguments);
 
         return $variable;
+    }
+
+    public static function includeFile(string $file): string
+    {
+        return BurningAutoloader::getInstance()->getProcessedSourcePath($file);
     }
 
     public static function register(): void

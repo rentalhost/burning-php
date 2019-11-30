@@ -22,11 +22,11 @@ class DirFileFixNodeVisitor
     public function enterNode(Node $node)
     {
         if ($node instanceof Node\Scalar\MagicConst\Dir) {
-            return new Node\Scalar\String_(dirname($this->processorFile->sourceResourcePath));
+            return new Node\Scalar\String_(dirname($this->processorFile->sourceOriginalResourcePath));
         }
 
         if ($node instanceof Node\Scalar\MagicConst\File) {
-            return new Node\Scalar\String_($this->processorFile->sourceResourcePath);
+            return new Node\Scalar\String_($this->processorFile->sourceOriginalResourcePath);
         }
 
         return parent::enterNode($node);

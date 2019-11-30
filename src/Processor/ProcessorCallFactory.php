@@ -12,6 +12,15 @@ class ProcessorCallFactory
     /** @var BuilderFactory|null */
     private static $builderFactory;
 
+    public static function createIncludeFileCall(Node\Expr $expression): Node\Expr\StaticCall
+    {
+        return new Node\Expr\StaticCall(
+            new Node\Name\FullyQualified('BurningCall'),
+            new Node\Name('includeFile'),
+            [ $expression ]
+        );
+    }
+
     public static function createVariableAnnotationCall(int $statementIndex, Node\Expr $expression): Node\Stmt\Expression
     {
         return self::createMethodCall('annotateVariable', $statementIndex, $expression);
