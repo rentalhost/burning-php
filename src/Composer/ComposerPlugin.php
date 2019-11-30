@@ -24,7 +24,7 @@ class ComposerPlugin
 
     public static function postAutoloadDump(Event $event): void
     {
-        if (!$event->isDevMode()) {
+        if ($event->isDevMode()) {
             $composer             = $event->getComposer();
             $composerAutoload     = realpath($composer->getConfig()->get('vendor-dir') . '/autoload.php');
             $composerAutoloadReal = dirname($composerAutoload) . '/autoload_composer.php';
