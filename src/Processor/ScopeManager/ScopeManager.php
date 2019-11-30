@@ -16,6 +16,7 @@ class ScopeManager
         PREFIX_NAMESPACE = 'n',
         PREFIX_CLASS = 'c',
         PREFIX_METHOD = 'm',
+        PREFIX_ANONYMOUS_FUNCTION = 'a',
         PREFIX_PARAMETER_VARIABLE = 'p',
         PREFIX_VARIABLE = 'v';
 

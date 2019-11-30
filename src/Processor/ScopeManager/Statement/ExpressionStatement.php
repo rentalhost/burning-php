@@ -47,7 +47,8 @@ class ExpressionStatement
 
         IfStatement::apply($scopeManager, $nodeStmt) ||
         ForStatement::apply($scopeManager, $nodeStmt) ||
-        TryCatchStatement::apply($scopeManager, $nodeStmt);
+        TryCatchStatement::apply($scopeManager, $nodeStmt) ||
+        StaticCallStatement::apply($scopeManager, $nodeStmt);
 
         return $nodeStmt;
     }
