@@ -19,6 +19,21 @@ class VariableManager
         return null;
     }
 
+    public function importVariable(string $name): ?int
+    {
+        if (!$this->stacks) {
+            return null;
+        }
+
+        $previousStack = end($this->stacks);
+
+        if (array_key_exists($name, $previousStack)) {
+            return $this->registerVariable($name, $previousStack[$name]);
+        }
+
+        return null;
+    }
+
     public function pop(): void
     {
         $previousStack = array_pop($this->stacks) ?? [];
